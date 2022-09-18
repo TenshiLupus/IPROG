@@ -1,4 +1,4 @@
-import java.util.Random;
+
 
 public class T2 implements Runnable{
     Thread currentThread = new Thread(this);
@@ -9,7 +9,7 @@ public class T2 implements Runnable{
     public T2(String name, int sleepTime){
         this.name = name;
         this.sleepTime = sleepTime;
-       
+        currentThread.start();
     } 
 
     @Override
