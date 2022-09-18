@@ -1,19 +1,24 @@
 import java.util.Random;
 
 public class T2 implements Runnable{
+    Thread currentThread = new Thread(this);
 
     String name;
-    int time;
-    Random r = new Random();
+    int sleepTime;
 
-    public T2(String name){
+    public T2(String name, int sleepTime){
         this.name = name;
-        time = r.nextInt(999);
+        this.sleepTime = sleepTime;
+       
     } 
 
     @Override
     public void run() {
-         System.out.printf("im T2 sleeping for: %s seconds", this.name);
+        try{
+        System.out.printf("im T2 sleeping for: %s seconds\n", this.sleepTime);
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 
 }
