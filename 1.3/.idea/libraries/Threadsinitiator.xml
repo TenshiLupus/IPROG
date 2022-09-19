@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Threadsinitiator">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/out/Threadsinitiator.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
