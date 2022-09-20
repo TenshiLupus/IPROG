@@ -1,7 +1,6 @@
 import java.util.*;
 
-public class ThreadsInitiator {
-
+public class ThreadsInitiator{
     /**
      * Main function that initiates all subsequent threads
      * @param args
