@@ -18,7 +18,11 @@ public class Server {
 
         ServerSocket serverSocket = new ServerSocket(2000);
         while (true) {
+            
             Socket acceptedPortConnection = serverSocket.accept();
+            if(acceptedPortConnection != null){
+                
+            }
             ServerThread serverThread = new ServerThread(acceptedPortConnection, threadList);
             threadList.add(serverThread);
         }

@@ -20,7 +20,7 @@ public class ClientThread implements Runnable{
 
             try{
                 while(true){
-                    //use the 
+                    //Store what was passed to the sockets buffered reader and output it
                     String response = input.readLine();
                     System.out.println(response);
                 }

@@ -10,35 +10,30 @@ public class ServerThread implements Runnable {
     private Socket clientSocket;
     private ArrayList<ServerThread> threadList;
     private PrintWriter output;
+    private boolean running;
 
     public ServerThread(Socket socket, ArrayList<ServerThread> threads) {
         this.clientSocket = socket;
         this.threadList = threads;
+        this.running = true;
         currentThread.start();
+        
     }
 
     @Override
     public void run() {
-        System.out.println("Running server");
         try {
             // get the payload sent from the client
             BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-            //medium to return output to clients
+            //will update clients with all received messages
             output = new PrintWriter(clientSocket.getOutputStream(), true);
 
-
-            //if client writes exit, end session for the client/server in the loopback address
-            while (true) {
-                String outputString = input.readLine();
-                if (outputString.equals("exit")) {
-                    break;
-                }
+            while (running) {
+                String clientOutput = input.readLine();
 
                 //notify all clients of new input
-                printToAllClients(outputString);
-
-                System.out.println("Server received " + outputString);
+                printToAllClients(clientOutput);
             }
 
         } catch (Exception e) {
@@ -46,10 +41,16 @@ public class ServerThread implements Runnable {
         }
     }
 
+    //SERVER VIEW
     // print out the received messages back to each client in the network
     private void printToAllClients(String outputString) {
         for (ServerThread st : threadList) {
+            st.output.println(this.clientSocket.getInetAddress().getHostName());
             st.output.println(outputString);
         }
+    }
+
+    public void kill(){
+        running = false;
     }
 }
