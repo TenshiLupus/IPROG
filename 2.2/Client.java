@@ -11,15 +11,18 @@ public class Client {
     // available host adresses in the loopback range. Therefore a byte suffices
     // private static byte hostNumber = 1;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         final Socket serverPortConnection;
         final BufferedReader inbf;
-        final PrintWriter out;
+        final PrintWriter clientOutput;
         final Scanner sc = new Scanner(System.in);
 
         // assign an end client ip address and provide a port on which to connect to
         // within the network
 
+        // Since for this use case we are opening different terminals in the same
+        // device. The ips should be the same. But in a real scenario. Different devices
+        // would be assigned different ips within the same network range
         String hostAddress = "127.0.0.1";
         int portNumber = 2000;
 
@@ -36,21 +39,24 @@ public class Client {
             default:
                 break;
         }
+        try {
+            serverPortConnection = new Socket(hostAddress, portNumber);
+            clientOutput = new PrintWriter(serverPortConnection.getOutputStream(), true);
+            inbf = new BufferedReader(new InputStreamReader(serverPortConnection.getInputStream()));
 
-        serverPortConnection = new Socket(hostAddress, portNumber);
-        out = new PrintWriter(serverPortConnection.getOutputStream(), true);
-        inbf = new BufferedReader(new InputStreamReader(serverPortConnection.getInputStream()));
-
-        String userInput;
-        String response;
-        String clientName = null;
-
-        while (active) {
-            String message = ("" + " message: ");
-            userInput = sc.nextLine();
-            out.println(message + " " + userInput);
+            String userInput;
+            
+            while (active) {
+                String message = ("(" + serverPortConnection.getInetAddress().getHostName() + ")" + "\n" + "says:");
+                userInput = sc.nextLine();
+                clientOutput.println(message + " " + userInput);
+            }       
+            serverPortConnection.close();
+            inbf.close();
+            clientOutput.close();
+        } catch (IOException ioe) {
+            System.out.println("Exception in Client class");
         }
-        serverPortConnection.close();
-         
+
     }
 }
