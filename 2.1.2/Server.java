@@ -21,6 +21,7 @@ public class Server {
         try {
             serverSocket = new ServerSocket(socketPort);
 
+            //Server listening for port connections
             while (running) {
                 
                 Socket clientPortConnection = serverSocket.accept();
