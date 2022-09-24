@@ -17,9 +17,9 @@ public class Server {
     public static void main(String[] args) {
         System.out.println("Server is now running");
         ArrayList<ServerThread> threadList = new ArrayList<>();
-
+        int socketPort = (args.length == 1) ? Integer.valueOf(args[0]) : 2000;
         try {
-            serverSocket = new ServerSocket(2000);
+            serverSocket = new ServerSocket(socketPort);
 
             while (running) {
                 
@@ -32,20 +32,25 @@ public class Server {
             }
             serverSocket.close();
         } catch (SocketException se){
-            se.printStackTrace();
+           
             shutdownServer();
         }catch (IOException ioe) {
-            ioe.printStackTrace();
+          
             shutdownServer();
         } 
     }
 
-    private static void shutdownServer(){
+    private synchronized static void shutdownServer(){
         running = false;
     }
 
-    public static void printServerCondition(ServerSocket serverSocket, ArrayList<ServerThread> threadList){
-        System.out.println("Host: " + serverSocket.getInetAddress().getHostName() + " " + "Listening on port: " + serverSocket.getLocalPort() + " " + "Users connected: " + threadList.size());
+    public synchronized static void printServerCondition(ServerSocket serverSocket, ArrayList<ServerThread> threadList){
+        
+        String message = "Host: " + serverSocket.getInetAddress().getHostName() + " " + "Listening on port: " + serverSocket.getLocalPort() + " " + "Users connected: " + threadList.size();
+        System.out.println(message);
+        for(ServerThread st : threadList){
+            st.output.println(message);
+        }
     }
 
 }

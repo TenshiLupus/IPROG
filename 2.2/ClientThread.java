@@ -11,26 +11,31 @@ public class ClientThread implements Runnable{
 
         public ClientThread(Socket socket) throws IOException{
             this.socket = socket;
-            this.input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             currentThread.start();
+           
         }
 
         @Override
         public void run(){
-
             try{
+                input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+               
                 while(true){
                     //use the 
                     String response = input.readLine();
                     System.out.println(response);
+                    if(response.equals("exit")){
+                        break;
+                    };
                 }
+                
             }catch(IOException e){
-                e.printStackTrace(); // was not able to establish a connection
+                 // was not able to establish a connection
             }finally{
                 try{
                     input.close();
                 } catch (Exception e){
-                    e.printStackTrace();
+                    
                 }
             }
         }

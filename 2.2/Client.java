@@ -12,10 +12,11 @@ public class Client {
     // private static byte hostNumber = 1;
 
     public static void main(String[] args) {
-        final Socket serverPortConnection;
-        final BufferedReader inbf;
+        final Socket socket;
+        final BufferedReader input;
         final PrintWriter clientOutput;
         final Scanner sc = new Scanner(System.in);
+        System.out.println(args.length);
 
         // assign an end client ip address and provide a port on which to connect to
         // within the network
@@ -27,36 +28,46 @@ public class Client {
         int portNumber = 2000;
 
         switch (args.length) {
-            case 3:
-                hostAddress = args[2];
+            case 1:
+                hostAddress = args[0];
+                System.out.println("host address changed");
                 break;
 
-            case 4:
-                hostAddress = args[2];
-                portNumber = Integer.valueOf(args[3]);
+            case 2:
+                hostAddress = args[0];
+                System.out.println("host addres and port changed");
+                portNumber = Integer.valueOf(args[1]);
                 break;
 
             default:
                 break;
         }
-        try {
-            serverPortConnection = new Socket(hostAddress, portNumber);
-            clientOutput = new PrintWriter(serverPortConnection.getOutputStream(), true);
-            inbf = new BufferedReader(new InputStreamReader(serverPortConnection.getInputStream()));
 
-            String userInput;
+        try{
+
+        socket = new Socket(hostAddress, portNumber);
+        clientOutput = new PrintWriter(socket.getOutputStream(), true);
+        input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        ClientThread ct = new ClientThread(socket);
+        
+        String userInput;
+
+        while (active) {
+            String message = ("(" + socket.getInetAddress().getHostName() + ")" + "\n" + "says: ");
             
-            while (active) {
-                String message = ("(" + serverPortConnection.getInetAddress().getHostName() + ")" + "\n" + "says:");
-                userInput = sc.nextLine();
-                clientOutput.println(message + " " + userInput);
-            }       
-            serverPortConnection.close();
-            inbf.close();
-            clientOutput.close();
-        } catch (IOException ioe) {
-            System.out.println("Exception in Client class");
+            userInput = sc.nextLine();
+            if (userInput.equals("exit")) {
+                break;
+            } else {
+                clientOutput.println(message + userInput);
+            }
         }
+        socket.close();
+        clientOutput.close();
+        input.close();    
+    }catch(IOException io){
+        
+    }
 
     }
 }

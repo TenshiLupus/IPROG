@@ -2,6 +2,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 
@@ -9,7 +10,8 @@ public class ServerThread implements Runnable {
     private Thread currentThread = new Thread(this);
     private Socket clientSocket;
     private ArrayList<ServerThread> threadList;
-    private PrintWriter output;
+    public PrintWriter output;
+    private BufferedReader input;
 
     private boolean clientThreadRunning;
 
@@ -17,6 +19,14 @@ public class ServerThread implements Runnable {
         this.clientSocket = socket;
         this.threadList = threads;
         this.clientThreadRunning = true;
+        try {
+            input = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
+            output = new PrintWriter(this.clientSocket.getOutputStream(), true);
+            
+        } catch (IOException e) {
+   
+            e.printStackTrace();
+        }
         currentThread.start();
         
     }
@@ -25,53 +35,51 @@ public class ServerThread implements Runnable {
     @Override
     public void run() {
         try {
-            // get the written messages from the client
-            BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
-            //server output all messages back to client
-            output = new PrintWriter(clientSocket.getOutputStream(), true);
-
-
-            
             while (clientThreadRunning) {
                 //Read the input from the client into a variable
                 String outputString = input.readLine();
-                System.out.println(outputString);
-                
-                if(outputString == null || outputString.toLowerCase().trim().equalsIgnoreCase(outputString)){
+                if(outputString != null){
+                    printToAllClients(outputString);
+                }
+                if(outputString == null){
+                    
                     threadList.remove(this);
-                    stopThread();
                     break;
                 }
-                //present all clients with new input
-                printToAllClients(outputString);
-
-                //log message to server console
-                
             }
-            threadList.remove(this);
-            System.out.println(threadList.size());
             printToAllClients("# A client has disconnected! #");
             Server.printServerCondition(Server.serverSocket, threadList);
-            clientSocket.close();
-            output.close();
-            input.close();
-
-        } catch (Exception e) {
-            System.out.println("Error occurred in the serverThread class");
+          
+        } catch (IOException e) {
+            threadList.remove(this);
+            String message = "A client has been forcefully isconnected by the server";
+            printToAllClients(message);
+            Server.printServerCondition(Server.serverSocket, threadList);
             stopThread();
+        }
+        finally{
+            try {
+                input.close();
+                output.close();
+                clientSocket.close();
+            } catch (IOException e) {
+                
+                
+            }
         }
     }
 
     // print out the received messages back to each client in the network
-    private void printToAllClients(String outputString) {
+    // don't know why its not working
+    private synchronized void printToAllClients(String outputString) {
+        System.out.println(outputString);
         for (ServerThread st : threadList) {
             st.output.println(outputString);
         }
     }
 
     //Stop the running thread on request
-    public void stopThread(){
+    public synchronized void stopThread(){
         clientThreadRunning = false;
     }
 }
