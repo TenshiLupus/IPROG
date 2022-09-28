@@ -36,7 +36,6 @@ class Paper extends JPanel implements Runnable{
   
   
   public Paper() {
-
     setBackground(Color.white);
     addMouseListener(new L1());
     addMouseMotionListener(new L2());
@@ -53,12 +52,9 @@ class Paper extends JPanel implements Runnable{
   }
 
   private void addPoint(Point p) {
-    synchronizeclientInput(); 
     hs.add(p);
     repaint();
   }
-
-  
  
   class L1 extends MouseAdapter {
     public void mousePressed(MouseEvent me) {
@@ -72,38 +68,72 @@ class Paper extends JPanel implements Runnable{
     }
   }
 
-  public void synchronizeclientInput(){
-    try{
+  class InputReceiver implements Runnable{
+    DatagramSocket socket;
+    byte[] buffer;
 
-    byte[] sendingDataBuffer = new byte[BUFFER_SIZE];
-    byte[] receivingDataBuffer = new byte[BUFFER_SIZE];
-    DatagramSocket clientSocket = new DatagramSocket();
-    InetAddress IPAddress = InetAddress.getByName("localhost");
-
-    String data = "position";
-    sendingDataBuffer = data.getBytes();
- 
-    DatagramPacket sendingPacket = new DatagramPacket(sendingDataBuffer, sendingDataBuffer.length,IPAddress, SERVICE_PORT);
-    clientSocket.send(sendingPacket);
-
-    DatagramPacket receivingPacket = new DatagramPacket(receivingDataBuffer, receivingDataBuffer.length);
-    clientSocket.receive(receivingPacket);
-        
-    String receivedData = new String(receivingPacket.getData());
-    System.out.println("Sent from the server: " + receivedData);
-
-    clientSocket.close();
-
-    }catch(SocketException se){
-
-    }catch(IOException ie){
-
+    InputReceiver(DatagramSocket s){
+      socket = s;
+      buffer = new byte[BUFFER_SIZE];
     }
-  }
+
+    @Override 
+    public void run() {
+      // TODO Auto-generated method stub
+      while(true){
+        try{
+          DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+          socket.receive(packet);
+          String data = new String(packet.getData());
+          System.out.println("received " + data);
+          
+        }catch(Exception e){
+          System.out.println(e);
+        }
+      }
+    }
+
+    class OutputSender implements Runnable{
+      DatagramSocket socket;
+      private String hostName;
+
+      OutputSender(DatagramSocket s, String h){
+        socket = s;
+        hostName = h;
+      }
+
+      public void outputPoint(String point) throws Exception {
+        byte[] buffer = point.getBytes();
+        InetAddress address = InetAddress.getByName("localhost");
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, SERVICE_PORT);
+        socket.send(packet);
+      }
+
+      @Override
+      public void run() {
+        // TODO Auto-generated method stub
+        boolean connected = false;
+        do{
+          try{
+            outputPoint("40 50");
+            connected = true;
+          }catch(Exception e){
+
+          }
+        }while(!connected);
+        while(true){
+          try{
+            
+          }
+        }
+      }
+      
+    }
+}
 
   @Override
   public void run() {
-    // TODO Auto-generated method stub
     
   }
 }
+
