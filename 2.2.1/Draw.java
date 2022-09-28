@@ -41,6 +41,11 @@ class Paper extends JPanel implements Runnable{
     addMouseMotionListener(new L2());
   }
 
+  @Override
+  public void run(){
+    
+  }
+
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
     g.setColor(Color.black);
@@ -59,6 +64,7 @@ class Paper extends JPanel implements Runnable{
   class L1 extends MouseAdapter {
     public void mousePressed(MouseEvent me) {
       addPoint(me.getPoint());
+      
     }
   }
 
@@ -111,29 +117,10 @@ class Paper extends JPanel implements Runnable{
 
       @Override
       public void run() {
-        // TODO Auto-generated method stub
-        boolean connected = false;
-        do{
-          try{
-            outputPoint("40 50");
-            connected = true;
-          }catch(Exception e){
-
-          }
-        }while(!connected);
-        while(true){
-          try{
-            
-          }
+          while (true){}
         }
       }
       
     }
-}
-
-  @Override
-  public void run() {
-    
-  }
 }
 
