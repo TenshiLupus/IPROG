@@ -3,42 +3,71 @@ import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.nio.Buffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 
-public class DrawServer {
+public class DrawServer implements Runnable {
 
     public final static int SERVICE_PORT = 2000;
+    public final static int BUFFER_SIZE = 1024;
+    
 
-    public static void main(String[] args){
-        try{
-            DatagramSocket serverSocket = new DatagramSocket(SERVICE_PORT);
-            byte[] receivingDataBuffer = new byte[1024];
-            byte[] sendingDataBuffer = new byte[1024];
+    private DatagramSocket socket; 
+    private ArrayList<InetAddress> clientAddresses;
+    private ArrayList<Integer> clientPorts;
+    private HashSet<String> existingClients;
+    private Thread currentThread = new Thread(this);
 
-            DatagramPacket inputPacket = new DatagramPacket(receivingDataBuffer, receivingDataBuffer.length);
-            System.out.println("Listening on client connection");
+    public DrawServer() throws IOException{
+        socket = new DatagramSocket(SERVICE_PORT);
+        clientAddresses = new ArrayList();
+        clientPorts = new ArrayList();
+        existingClients = new HashSet();
+        currentThread.start();
+    }
 
-            serverSocket.receive(inputPacket);
-            
-            //log client data sent by the client
-            String receiveData = new String(inputPacket.getData());
-            System.out.println("Sent from the client: " + receiveData);
+    public void run(){
+        byte[] buffer = new byte[BUFFER_SIZE];
+        while(true){
+            try{
+                Arrays.fill(buffer, (byte)0);
+                DatagramPacket inputPacket = new DatagramPacket(buffer, buffer.length);
+                socket.receive(inputPacket);
+                
+                String content = new String(inputPacket.getData());
+                
+                InetAddress clientAddress = inputPacket.getAddress();
+                int clientPort = inputPacket.getPort();
 
-            sendingDataBuffer = receiveData.getBytes();
+                String id = clientAddress.toString() + "," + clientPort;
+                if(!existingClients.contains(id)){
+                    existingClients.add(id);
+                    clientPorts.add(clientPort);
+                    clientAddresses.add(clientAddress);
 
-            InetAddress senderAddress = inputPacket.getAddress();
-            int senderPort = inputPacket.getPort();
+                }   
 
-            DatagramPacket outPacket = new DatagramPacket(sendingDataBuffer, sendingDataBuffer.length, senderAddress, senderPort);
+                System.out.println(id + " : " + content);
+                byte[] data = content.getBytes();
+                for(int i = 0; i < clientAddresses.size(); i++){
+                    InetAddress cl = clientAddresses.get(i);
+                    int cp = clientPorts.get(i);
+                    inputPacket = new DatagramPacket(data, data.length, cl, cp);
+                    socket.send(inputPacket);
+                }
 
-            serverSocket.send(outPacket);
+                System.out.println("Processed data");
+            }catch(Exception e){
 
-            serverSocket.close();
-
-
-        }catch(SocketException se){
-            se.getMessage();
-        }catch(IOException ie){
-            ie.getMessage();
+                System.out.println(e.getMessage());
+            }
         }
+
+    }
+    public static void main(String[] args) throws Exception{
+        DrawServer ds = new DrawServer();
+        System.out.println("Ended main");
     }
 }
