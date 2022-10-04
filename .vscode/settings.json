@@ -1,0 +1,17 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "atlas.dsv.su.se",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "IPROG",
+            "database": "db_21114200",
+            "username": "usr_21114200",
+            "password": "114200"
+        }
+    ]
+}

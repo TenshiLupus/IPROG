@@ -1,0 +1,23 @@
+{
+    "java.project.sourcePaths": ["src"],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "mysql-connector-java-5.0.8-bin.jar"
+    ],
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "atlas.dsv.su.se",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "internetdatabase",
+            "database": "db_21114200",
+            "username": "usr_21114200",
+            "password": "114200"
+        }
+    ]
+}
