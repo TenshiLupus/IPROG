@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sort"
 
 	"github.com/CloudyKit/jet/v6"
 	"github.com/gorilla/websocket"
@@ -38,9 +39,10 @@ type WebSocketConnection struct {
 	*websocket.Conn
 }
 type WsJsonResponse struct {
-	Action      string `json:"action"`
-	Message     string `json:"message"`
-	MessageType string `json:"messge_type"`
+	Action         string   `json:"action"`
+	Message        string   `json:"message"`
+	MessageType    string   `json:"messge_type"`
+	ConnectedUsers []string `json:"connected_users"`
 }
 
 type WsPayload struct {
@@ -73,11 +75,11 @@ func WsEndpoint(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	go ListenForWs(&conn)
+	go listenForWs(&conn)
 }
 
-//Listens for incoming packets are come through the established connection
-func ListenForWs(conn *WebSocketConnection) {
+// Listens for incoming packets are come through the established connection
+func listenForWs(conn *WebSocketConnection) {
 	//execute this function, if the upper function stops runnning
 	defer func() {
 		if r := recover(); r != nil {
@@ -99,6 +101,7 @@ func ListenForWs(conn *WebSocketConnection) {
 	}
 }
 
+// listens for any action from the client and act accordingly
 func ListenToWsChannel() {
 	var response WsJsonResponse
 
@@ -106,13 +109,45 @@ func ListenToWsChannel() {
 	for {
 		e := <-wsChan
 
-		response.Action = "Got here"
-		response.Message = fmt.Sprintf("Some message, and action was %s", e.Action)
-		BroadCastToAll(response)
+		switch e.Action {
+		case "username":
+			//get a list of all users and send it back via broadcast
+			clients[e.Conn] = e.Username
+			users := getUserList()
+			response.Action = "list_users"
+			response.ConnectedUsers = users
+			broadcastToAll(response)
+			break
+
+		case "left":
+			response.Action = "list_users"
+			delete(clients, e.Conn)
+			users := getUserList()
+			response.ConnectedUsers = users
+			broadcastToAll(response)
+
+	
+		}
+
+		// response.Action = "Got here"
+		// response.Message = fmt.Sprintf("Some message, and action was %s", e.Action)
+		// BroadCastToAll(response)
+
 	}
 }
 
-func BroadCastToAll(response WsJsonResponse) {
+func getUserList() []string {
+	var userList []string
+	for _, x := range clients {
+		if x != "" {
+			userList = append(userList, x)
+		}
+	}
+	sort.Strings(userList)
+	return userList
+}
+
+func broadcastToAll(response WsJsonResponse) {
 	for client := range clients {
 		err := client.WriteJSON(response)
 		if err != nil {
