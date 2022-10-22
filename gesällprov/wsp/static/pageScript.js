@@ -3,7 +3,7 @@ let socket = null;
     let userField = document.getElementById("username");
     let messageField = document.getElementById("message");
 
-    //before leaving the page 
+    //before leaving the page change state of message
     window.onbeforeunload = function () {
         console.log("Leaving");
         let jsonData = {};
