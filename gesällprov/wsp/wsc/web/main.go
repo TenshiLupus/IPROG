@@ -6,6 +6,7 @@ import (
 	"wsp/utility/handlers"
 )
 
+//setup the server to listen on port 8080
 func main() {
 	mux := routes()
 
