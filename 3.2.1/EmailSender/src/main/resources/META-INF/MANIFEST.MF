@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Main-Class: com.example.emailsender.EmailSender
+Class-Path: javafx.graphics.jar javafx-graphics-19-ea+7-win.jar javafx-s
+ wt.jar javafx.media.jar javafx-controls-19-ea+7.jar javafx-controls-19-
+ ea+7-win.jar javafx-base-19-ea+7.jar javax.mail.jar javafx-fxml-19-ea+7
+ -win.jar javafx-fxml-19-ea+7.jar javafx.swing.jar javafx.controls.jar j
+ avafx.fxml.jar javafx-base-19-ea+7-win.jar javafx.base.jar javafx-graph
+ ics-19-ea+7.jar javafx.web.jar activation.jar
+

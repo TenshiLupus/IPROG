@@ -4,6 +4,4 @@ module com.example.emailsender {
     requires java.mail;
 
 
-    opens com.example.emailsender to javafx.fxml;
-    exports com.example.emailsender;
 }

@@ -1,0 +1,28 @@
+<component name="ArtifactManager">
+  <artifact name="EmailSender:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/EmailSender_jar</output-path>
+    <root id="root">
+      <element id="archive" name="EmailSender.jar">
+        <element id="module-output" name="EmailSender" />
+      </element>
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-graphics:win:19-ea+7" />
+      <element id="library" level="project" name="javafx-swt" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-controls:19-ea+7" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-controls:win:19-ea+7" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-base:19-ea+7" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-fxml:win:19-ea+7" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-fxml:19-ea+7" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-base:win:19-ea+7" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-graphics:19-ea+7" />
+      <element id="library" level="project" name="activation" />
+      <element id="library" level="project" name="javafx.base" />
+      <element id="library" level="project" name="javafx.controls" />
+      <element id="library" level="project" name="javafx.fxml" />
+      <element id="library" level="project" name="javafx.graphics" />
+      <element id="library" level="project" name="javafx.media" />
+      <element id="library" level="project" name="javafx.swing" />
+      <element id="library" level="project" name="javafx.web" />
+      <element id="library" level="project" name="javax.mail" />
+    </root>
+  </artifact>
+</component>
