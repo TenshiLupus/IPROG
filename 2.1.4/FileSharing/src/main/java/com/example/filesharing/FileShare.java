@@ -10,6 +10,8 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.FlowPane;
@@ -18,6 +20,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import javax.swing.text.html.ImageView;
 
 public class FileShare extends Application {
     private static final int WIDTH = 900;
@@ -30,9 +34,9 @@ public class FileShare extends Application {
         stage.setTitle("File Chooser Sample");
 
         final FileChooser fileChooser = new FileChooser();
-
         final Button openButton = new Button("Open a Picture...");
         final Button openMultipleButton = new Button("Open Pictures...");
+
         openButton.setOnAction(
                 new EventHandler<ActionEvent>() {
                     @Override
@@ -50,10 +54,13 @@ public class FileShare extends Application {
 
 
         final FlowPane fPane = new FlowPane();
+        final ImageView iv = new ImageView();
 
 
         fPane.setHgap(6);
         fPane.setVgap(6);
+        fPane.setOrientation(Orientation.VERTICAL);
+        fPane.setAlignment(Pos.CENTER);
         fPane.getChildren().addAll(openButton);
 
         final Pane rootGroup = new VBox(12);
