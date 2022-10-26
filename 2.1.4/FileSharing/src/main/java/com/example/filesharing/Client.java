@@ -17,11 +17,12 @@ public class Client {
             this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.userName = userName;
         } catch (IOException e) {
-            closeEverything(socket, bw, br);
+            closeEverything(socket, br, bw);
         }
     }
 
     //Send message over to the client handler for printing to other clients
+    //Where image will need to be sent from
     public void sendMessage(){
         try{
             bw.write(userName);
@@ -30,7 +31,7 @@ public class Client {
 
             Scanner sc = new Scanner(System.in);
             while(socket.isConnected()){
-                String messagets = sc.nextLine();
+
                 bw.write(userName + ": ");
                 bw.newLine();
                 bw.flush();
@@ -53,7 +54,7 @@ public class Client {
                     try{
                         msgFromGroupChat = br.readLine();
                         System.out.println(msgFromGroupChat);
-                    }catch (IOException ioe {
+                    }catch (IOException ioe){
                         closeEverything(socket, br, bw);
                     }
                 }

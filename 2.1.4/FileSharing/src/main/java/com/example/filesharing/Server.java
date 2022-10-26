@@ -37,7 +37,12 @@ public class Server {
         }
     }
 
-    public static void main(String[] args) {
-        ServerSocket = new ServerSocket(5000);
+    public static void main(String[] args) throws IOException{
+       ServerSocket serverSocket = new ServerSocket(5000);
+       Server server = new Server(serverSocket);
+       server.startServer();
+       System.out.println("Server has initiated");
     }
+
+
 }

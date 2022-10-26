@@ -54,7 +54,7 @@ public class FileShare extends Application {
 
 
         final FlowPane fPane = new FlowPane();
-        final ImageView iv = new ImageView();
+
 
 
         fPane.setHgap(6);
