@@ -31,8 +31,8 @@ public class Client {
 
             Scanner sc = new Scanner(System.in);
             while(socket.isConnected()){
-
-                bw.write(userName + ": ");
+                String message = sc.nextLine();
+                bw.write(userName + ": " + message);
                 bw.newLine();
                 bw.flush();
             }
@@ -80,7 +80,7 @@ public class Client {
 
     public static void main(String[] args) throws IOException{
         Scanner sc = new Scanner(System.in);
-        System.out.println("Client has initiated");
+        System.out.println("Enter your display name");
         String username = sc.nextLine();
         Socket socket = new Socket("localhost", 5000);
         Client c = new Client(socket, username);

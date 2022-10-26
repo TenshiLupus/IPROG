@@ -19,6 +19,8 @@ public class Server {
                 System.out.println("A new client has connected");
 
                 ClientHandler clientHandler = new ClientHandler(socket);
+                Thread thread = new Thread(clientHandler);
+                thread.start();
 
             }
         }
@@ -41,7 +43,7 @@ public class Server {
        ServerSocket serverSocket = new ServerSocket(5000);
        Server server = new Server(serverSocket);
        server.startServer();
-       System.out.println("Server has initiated");
+
     }
 
 
