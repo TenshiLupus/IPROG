@@ -1,10 +1,14 @@
 package com.example.clients;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.awt.Desktop;
 import java.io.*;
@@ -12,30 +16,22 @@ import java.net.Socket;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.net.Socket;
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 
-public class HelloController {
+public class HelloController implements Initializable {
     private Socket socket;
     private BufferedReader br;
     private BufferedWriter bw;
     private String userName;
     private Desktop desktop = Desktop.getDesktop();
     @FXML
-    private ImageView welcomeText;
-
+    private ImageView image_container;
     @FXML
-    protected void sendImage(ActionEvent event) {
-
-        final FileChooser fileChooser = new FileChooser();
-        File file = fileChooser.showOpenDialog(event.);
-        if (file != null) {
-            try {
-                openFile(file);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-    }
+    private Button send_button;
+    @FXML
+    private Button listen_button;
 
     @FXML
     protected void startListening() {
@@ -88,4 +84,26 @@ public class HelloController {
         desktop.open(file);
     }
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        Stage st = (Stage) image_container.getScene().getWindow();
+
+        send_button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                final FileChooser fileChooser = new FileChooser();
+                File file = fileChooser.showOpenDialog(st);
+                if (file != null) {
+                    try {
+                        openFile(file);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+
+        });
+
+        listen_button.setOnAction();
+    }
 }

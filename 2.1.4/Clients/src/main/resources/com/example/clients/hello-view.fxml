@@ -9,12 +9,12 @@
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.clients.HelloController">
 
-    <ImageView fx:id="ImageContainer" fitHeight="400" fitWidth="400"></ImageView>
+    <ImageView fx:id="image_container" fitHeight="400" fitWidth="400"></ImageView>
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
     <Label fx:id="welcomeTex"/>
-    <Button text="Select image to send" onAction="#sendImage"/>
-    <Button text="start listening for incoming images" onAction="#startListening"/>
+    <Button fx:id="send_button" text="Select image to send" />
+    <Button fx:id="listen_button" text="start listening for incoming images" />
 </VBox>
