@@ -1,24 +1,48 @@
 package com.example.filesharing;
 
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
+import java.awt.*;
+import java.io.File;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Client {
+public class Client extends Application {
+    private static final int WIDTH = 900;
+    private static final int HEIGHT = 800;
+
     private Socket socket;
     private BufferedReader br;
     private BufferedWriter bw;
     private String userName;
 
-    public Client(Socket socket, String userName){
+    private Desktop desktop = Desktop.getDesktop();
+
+    public Client(Socket socket, String userName,String[] args){
         try{
             this.socket = socket;
             this.bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.userName = userName;
+            Application.launch(args);
         } catch (IOException e) {
             closeEverything(socket, br, bw);
         }
+
     }
 
     //Send message over to the client handler for printing to other clients
@@ -83,8 +107,15 @@ public class Client {
         System.out.println("Enter your display name");
         String username = sc.nextLine();
         Socket socket = new Socket("localhost", 5000);
-        Client c = new Client(socket, username);
+        Client c = new Client(socket, username, args);
         c.listenForMessage();
         c.sendMessage();
     }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+
+    }
+
+
 }
