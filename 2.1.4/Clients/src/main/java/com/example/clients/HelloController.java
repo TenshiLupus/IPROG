@@ -35,33 +35,7 @@ public class HelloController implements Initializable {
 
     @FXML
     protected void startListening() {
-        try{
-            Scanner sc = new Scanner(System.in);
-            socket = new Socket("localhost", 5000);
-            bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            br = new BufferedReader(new InputStreamReader(socket.getInputStream()));;
-            System.out.println("Enter your display name");
-            userName = sc.nextLine();
 
-        } catch (IOException e) {
-            closeEverything(socket, br, bw);
-        }
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String msgFromGroupChat;
-
-                while(socket.isConnected()){
-                    try{
-                        msgFromGroupChat = br.readLine();
-                        System.out.println(msgFromGroupChat);
-                    }catch (IOException ioe){
-                        closeEverything(socket, br, bw);
-                    }
-                }
-            }
-        }).start();
     }
 
     private void closeEverything(Socket socket, BufferedReader br, BufferedWriter bw){
@@ -90,8 +64,9 @@ public class HelloController implements Initializable {
 
         send_button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent actionEvent) {
+            public void handle(ActionEvent event) {
                 final FileChooser fileChooser = new FileChooser();
+                //allegedly this is casting null
                 File file = fileChooser.showOpenDialog(st);
                 if (file != null) {
                     try {
@@ -104,6 +79,37 @@ public class HelloController implements Initializable {
 
         });
 
-        listen_button.setOnAction();
+        listen_button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try{
+                    Scanner sc = new Scanner(System.in);
+                    socket = new Socket("localhost", 5000);
+                    bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                    br = new BufferedReader(new InputStreamReader(socket.getInputStream()));;
+                    System.out.println("Enter your display name");
+                    userName = sc.nextLine();
+
+                } catch (IOException e) {
+                    closeEverything(socket, br, bw);
+                }
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String msgFromGroupChat;
+
+                        while(socket.isConnected()){
+                            try{
+                                msgFromGroupChat = br.readLine();
+                                System.out.println(msgFromGroupChat);
+                            }catch (IOException ioe){
+                                closeEverything(socket, br, bw);
+                            }
+                        }
+                    }
+                }).start();
+            }
+        });
     }
 }
