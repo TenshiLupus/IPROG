@@ -13,14 +13,26 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 
 
 public class Client extends Application {
     private final Desktop desktop = Desktop.getDesktop();
+    private Socket socket = null;
+    private BufferedWriter bw = null;
+    private BufferedReader br = null;
+
+    private OutputStream os = null;
+    private InputStream is = null;
+
+    private int maxSize = 999999999;
+    private int byteRead;
+    private int current = 0;
 
     public static void main(String[] args) {
         launch(args);
@@ -32,48 +44,75 @@ public class Client extends Application {
 
 //create a Scene
         stage.setTitle("File Chooser Sample");
-
-        Socket socket = null;
-        BufferedWriter bw = null;
-        BufferedReader br = null;
-
         try{
-
             socket = new Socket("localhost", 5000);
             bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
+            br = new BufferedReader(new InputStreamReader(socket.getInputStream())); 
         } catch (IOException e) {
             closeEverything(socket, br, bw);
         }
 
         final FileChooser fileChooser = new FileChooser();
-        final Button openButton = new Button("Open a Picture...");
+        final Button openButton = new Button("Send a Picture");
+        final Button listenButton = new Button("Start listening");
 
         openButton.setOnAction(
                 new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(final ActionEvent e) {
 
+                        //obtain a file from the filechooser
                         File file = fileChooser.showOpenDialog(stage);
                         if (file != null) {
                             try {
-                                openFile(file);
+                                //Convert file into a byte array
+                                byte[] buffer = new byte[(int) file.length()];
+                                FileInputStream fis = new FileInputStream(file);
+                                BufferedInputStream in = new BufferedInputStream(fis);
+
+                                in.read(buffer, 0 , buffer.length);
+                                os = socket.getOutputStream();
+                                os.write(buffer, 0, buffer.length);
+                                System.out.println("File has been sent");
+                                os.flush();
+                                os.close();
+                                in.close();
                             } catch (IOException ex) {
-                                throw new RuntimeException(ex);
+                                ex.printStackTrace();
                             }
                         }
+
+                        //Convert file into a byte array
+                        byte[] buffer = new byte[(int) file.length()];
                     }
                 });
 
 
+        listenButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent e) {
+                try {
+
+                    is = socket.getInputStream();
+                    File test = new File("x.jpg");
+                    test.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(test);
+                    BufferedOutputStream bos = new BufferedOutputStream(fos);
+
+                    Image image = new Image("x.jpg");
+
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
         final FlowPane fPane = new FlowPane();
 
         fPane.setHgap(6);
         fPane.setVgap(6);
         fPane.setOrientation(Orientation.VERTICAL);
         fPane.setAlignment(Pos.CENTER);
-        fPane.getChildren().addAll(openButton);
+        fPane.getChildren().addAll(openButton, listenButton);
 
         final Pane rootGroup = new VBox(12);
         rootGroup.getChildren().addAll(fPane);
