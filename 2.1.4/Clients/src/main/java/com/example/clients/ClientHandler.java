@@ -8,16 +8,15 @@ public class ClientHandler implements Runnable{
 
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
     private Socket socket;
-    private BufferedReader bufferr;
-    private BufferedWriter bufferw;
+    private InputStream is;
+    private OutputStream os;
     private String clientUsername;
 
     public ClientHandler(Socket socket){
         try {
             this.socket = socket;
-            this.bufferw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            this.bufferr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.clientUsername = bufferr.readLine();
+            this.is = socket.getInputStream();
+            this.os = socket.getOutputStream();
 
             clientHandlers.add(this);
             broadcastMessage("SERVER " + clientUsername + "has entered");
@@ -47,9 +46,7 @@ public class ClientHandler implements Runnable{
             for(ClientHandler clientHandler : clientHandlers){
                 try{
                     if(!clientHandler.clientUsername.equals(clientUsername)){
-                        clientHandler.bufferw.write(message);
-                        clientHandler.bufferw.newLine();
-                        clientHandler.bufferw.flush();
+
                     }
                 } catch (IOException e) {
                     closeEverything(socket, bufferr, bufferw);

@@ -13,10 +13,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
 
@@ -55,7 +58,7 @@ public class Client extends Application {
         final FileChooser fileChooser = new FileChooser();
         final Button openButton = new Button("Send a Picture");
         final Button listenButton = new Button("Start listening");
-
+        final ImageView imageContainer = new ImageView();
         openButton.setOnAction(
                 new EventHandler<ActionEvent>() {
                     @Override
@@ -66,17 +69,20 @@ public class Client extends Application {
                         if (file != null) {
                             try {
                                 //Convert file into a byte array
-                                byte[] buffer = new byte[(int) file.length()];
-                                FileInputStream fis = new FileInputStream(file);
-                                BufferedInputStream in = new BufferedInputStream(fis);
+                                OutputStream os = socket.getOutputStream();
+                                BufferedOutputStream bos = new BufferedOutputStream(os);
+                                ImageIcon imagecon = new ImageIcon(file.getAbsolutePath());
+                                Image image = imagecon.getImage();
+                                BufferedImage bi = new BufferedImage((int)image.getWidth(null), (int)image.getHeight(null), BufferedImage.TYPE_INT_RGB);
 
-                                in.read(buffer, 0 , buffer.length);
-                                os = socket.getOutputStream();
-                                os.write(buffer, 0, buffer.length);
-                                System.out.println("File has been sent");
-                                os.flush();
-                                os.close();
-                                in.close();
+                                Graphics graphics = bi.createGraphics();
+                                graphics.drawImage(image, 0,0,null);
+                                graphics.dispose();
+                                ImageIO.write(bi, "jpg", bos);
+
+                                bos.close();
+                                socket.close();
+
                             } catch (IOException ex) {
                                 ex.printStackTrace();
                             }
@@ -94,12 +100,12 @@ public class Client extends Application {
                 try {
 
                     is = socket.getInputStream();
+
                     File test = new File("x.jpg");
                     test.createNewFile();
                     FileOutputStream fos = new FileOutputStream(test);
                     BufferedOutputStream bos = new BufferedOutputStream(fos);
 
-                    Image image = new Image("x.jpg");
 
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
