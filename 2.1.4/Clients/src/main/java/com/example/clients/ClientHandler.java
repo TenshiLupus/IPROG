@@ -1,5 +1,8 @@
 package com.example.clients;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -12,6 +15,8 @@ public class ClientHandler implements Runnable{
     private OutputStream os;
     private String clientUsername;
 
+    private BufferedInputStream bis
+
     public ClientHandler(Socket socket){
         try {
             this.socket = socket;
@@ -19,9 +24,9 @@ public class ClientHandler implements Runnable{
             this.os = socket.getOutputStream();
 
             clientHandlers.add(this);
-            broadcastMessage("SERVER " + clientUsername + "has entered");
+
         }catch (IOException e){
-            closeEverything(socket, bufferr, bufferw);
+
         }
     }
 
@@ -30,10 +35,14 @@ public class ClientHandler implements Runnable{
         String messageFromClient;
         while(socket.isConnected()){
             try{
-                messageFromClient = bufferr.readLine();
-                broadcastMessage(messageFromClient);
+                InputStream inputStream = this.is;
+                BufferedInputStream bis = new BufferedInputStream(inputStream);
+                BufferedImage bi = ImageIO.read(bis);
+
+
+                broadcastMessage(bi);
+                closeEverything(socket, bis);
             }catch(IOException e){
-                closeEverything(socket, bufferr, bufferw);
                 break;
             }
 
@@ -41,18 +50,29 @@ public class ClientHandler implements Runnable{
     }
 
     //Sends a message to all connected users in the clienthandlersList
-    public void broadcastMessage(String message){
+    public void broadcastMessage(BufferedImage bi){
 
-            for(ClientHandler clientHandler : clientHandlers){
-                try{
-                    if(!clientHandler.clientUsername.equals(clientUsername)){
+        Graphics graphics = bi.createGraphics();
+        graphics.drawImage(bi, 0,0,null);
+        graphics.dispose();
 
-                    }
-                } catch (IOException e) {
-                    closeEverything(socket, bufferr, bufferw);
+
+        for(ClientHandler clientHandler : clientHandlers){
+            BufferedOutputStream bos = null;
+            try{
+                if(clientHandler != this){
+                    bos = new BufferedOutputStream(clientHandler.os);
+
+                    ImageIO.write(bi, "jpg", bos);
+
+
                 }
-            }
 
+
+            } catch (IOException e) {
+                closeEverything(clientHandler.socket,bos);
+            }
+        }
     }
 
     public void removeClientHandler(){
@@ -60,14 +80,11 @@ public class ClientHandler implements Runnable{
         broadcastMessage("sERVER: " + clientUsername + "has left the chat");
     }
 
-    public void closeEverything(Socket socket, BufferedReader br, BufferedWriter bw){
+    public void closeEverything(Socket socket, BufferedInputStream bis){
         removeClientHandler();
         try{
-            if(br != null){
-                bufferr.close();
-            }
-            if(bw != null){
-                bufferw.close();
+            if(bis != null){
+                bis.close();
             }
             if (socket != null){
                 socket.close();

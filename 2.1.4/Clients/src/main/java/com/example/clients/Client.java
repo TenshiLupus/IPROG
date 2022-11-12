@@ -71,13 +71,15 @@ public class Client extends Application {
                                 //Convert file into a byte array
                                 OutputStream os = socket.getOutputStream();
                                 BufferedOutputStream bos = new BufferedOutputStream(os);
+
+
                                 ImageIcon imagecon = new ImageIcon(file.getAbsolutePath());
                                 Image image = imagecon.getImage();
                                 BufferedImage bi = new BufferedImage((int)image.getWidth(null), (int)image.getHeight(null), BufferedImage.TYPE_INT_RGB);
-
                                 Graphics graphics = bi.createGraphics();
                                 graphics.drawImage(image, 0,0,null);
                                 graphics.dispose();
+
                                 ImageIO.write(bi, "jpg", bos);
 
                                 bos.close();
