@@ -15,13 +15,18 @@ public class ClientHandler implements Runnable{
     private OutputStream os;
     private String clientUsername;
 
-    private BufferedInputStream bis
+    private BufferedInputStream bis;
+    private BufferedOutputStream bos;
+
+
 
     public ClientHandler(Socket socket){
         try {
             this.socket = socket;
             this.is = socket.getInputStream();
             this.os = socket.getOutputStream();
+            this.bos = new BufferedOutputStream(os);
+            this.bis = new BufferedInputStream(is);
 
             clientHandlers.add(this);
 
@@ -35,14 +40,17 @@ public class ClientHandler implements Runnable{
         String messageFromClient;
         while(socket.isConnected()){
             try{
-                InputStream inputStream = this.is;
-                BufferedInputStream bis = new BufferedInputStream(inputStream);
                 BufferedImage bi = ImageIO.read(bis);
+
+                Graphics graphics = bi.createGraphics();
+                graphics.drawImage(bi,0,0,null);
+                graphics.dispose();
 
 
                 broadcastMessage(bi);
-                closeEverything(socket, bis);
+
             }catch(IOException e){
+                closeEverything(socket, bis, bos);
                 break;
             }
 
@@ -52,39 +60,34 @@ public class ClientHandler implements Runnable{
     //Sends a message to all connected users in the clienthandlersList
     public void broadcastMessage(BufferedImage bi){
 
-        Graphics graphics = bi.createGraphics();
-        graphics.drawImage(bi, 0,0,null);
-        graphics.dispose();
-
-
         for(ClientHandler clientHandler : clientHandlers){
-            BufferedOutputStream bos = null;
+
             try{
-                if(clientHandler != this){
-                    bos = new BufferedOutputStream(clientHandler.os);
-
+                if(clientHandler != this){;
                     ImageIO.write(bi, "jpg", bos);
-
 
                 }
 
 
             } catch (IOException e) {
-                closeEverything(clientHandler.socket,bos);
+                closeEverything(socket, bis, bos);
             }
         }
     }
 
     public void removeClientHandler(){
         clientHandlers.remove(this);
-        broadcastMessage("sERVER: " + clientUsername + "has left the chat");
+
     }
 
-    public void closeEverything(Socket socket, BufferedInputStream bis){
+    public void closeEverything(Socket socket, BufferedInputStream bis, BufferedOutputStream bos){
         removeClientHandler();
         try{
             if(bis != null){
                 bis.close();
+            }
+            if(bos != null){
+                bos.close();
             }
             if (socket != null){
                 socket.close();

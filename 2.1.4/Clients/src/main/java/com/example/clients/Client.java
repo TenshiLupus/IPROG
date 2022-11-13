@@ -8,17 +8,20 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.image.ImageView;
+import javafx.scene.canvas.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.Image;
+import javafx.scene.image.Image;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
@@ -27,8 +30,6 @@ import java.net.Socket;
 public class Client extends Application {
     private final Desktop desktop = Desktop.getDesktop();
     private Socket socket = null;
-    private BufferedWriter bw = null;
-    private BufferedReader br = null;
 
     private OutputStream os = null;
     private InputStream is = null;
@@ -48,17 +49,21 @@ public class Client extends Application {
 //create a Scene
         stage.setTitle("File Chooser Sample");
         try{
-            socket = new Socket("localhost", 5000);
-            bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            br = new BufferedReader(new InputStreamReader(socket.getInputStream())); 
+            this.socket = new Socket("localhost", 5000);
+            System.out.println(socket);
+
+            this.os = socket.getOutputStream();
+            this.is = socket.getInputStream();
+
         } catch (IOException e) {
-            closeEverything(socket, br, bw);
+            closeEverything(socket);
         }
 
         final FileChooser fileChooser = new FileChooser();
         final Button openButton = new Button("Send a Picture");
         final Button listenButton = new Button("Start listening");
         final ImageView imageContainer = new ImageView();
+
         openButton.setOnAction(
                 new EventHandler<ActionEvent>() {
                     @Override
@@ -69,29 +74,23 @@ public class Client extends Application {
                         if (file != null) {
                             try {
                                 //Convert file into a byte array
-                                OutputStream os = socket.getOutputStream();
                                 BufferedOutputStream bos = new BufferedOutputStream(os);
 
 
-                                ImageIcon imagecon = new ImageIcon(file.getAbsolutePath());
-                                Image image = imagecon.getImage();
-                                BufferedImage bi = new BufferedImage((int)image.getWidth(null), (int)image.getHeight(null), BufferedImage.TYPE_INT_RGB);
+                                BufferedImage bisource = ImageIO.read(file);
+                                BufferedImage bi = new BufferedImage(bisource.getWidth(), bisource.getHeight(), BufferedImage.TYPE_INT_RGB);
+
                                 Graphics graphics = bi.createGraphics();
-                                graphics.drawImage(image, 0,0,null);
+                                graphics.drawImage(bisource,0,0,null);
                                 graphics.dispose();
 
                                 ImageIO.write(bi, "jpg", bos);
-
-                                bos.close();
-                                socket.close();
+                                System.out.println("image Sent out");
 
                             } catch (IOException ex) {
                                 ex.printStackTrace();
                             }
                         }
-
-                        //Convert file into a byte array
-                        byte[] buffer = new byte[(int) file.length()];
                     }
                 });
 
@@ -99,19 +98,23 @@ public class Client extends Application {
         listenButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent e) {
-                try {
-
-                    is = socket.getInputStream();
-
-                    File test = new File("x.jpg");
-                    test.createNewFile();
-                    FileOutputStream fos = new FileOutputStream(test);
-                    BufferedOutputStream bos = new BufferedOutputStream(fos);
-
-
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+                System.out.println("listening");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            while (!socket.isClosed()) {
+                                BufferedInputStream bis = new BufferedInputStream(is);
+                                BufferedImage bi = ImageIO.read(bis);
+                                Image imagetoDisplay = convertToFxImage(bi);
+                                imageContainer.setImage(imagetoDisplay);
+                                System.out.println("image should be displaying");
+                            }
+                        } catch(IOException ex){
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                });
             }
         });
         final FlowPane fPane = new FlowPane();
@@ -120,7 +123,7 @@ public class Client extends Application {
         fPane.setVgap(6);
         fPane.setOrientation(Orientation.VERTICAL);
         fPane.setAlignment(Pos.CENTER);
-        fPane.getChildren().addAll(openButton, listenButton);
+        fPane.getChildren().addAll(openButton, listenButton, imageContainer);
 
         final Pane rootGroup = new VBox(12);
         rootGroup.getChildren().addAll(fPane);
@@ -131,14 +134,26 @@ public class Client extends Application {
         System.out.println("Window should have opened");
     }
 
-    public void closeEverything(Socket socket, BufferedReader br, BufferedWriter bw){
+
+    //function taken from a stackoverflow post
+    private Image convertToFxImage(BufferedImage image) {
+        WritableImage wr = null;
+        if (image != null) {
+            wr = new WritableImage(image.getWidth(), image.getHeight());
+            PixelWriter pw = wr.getPixelWriter();
+            for (int x = 0; x < image.getWidth(); x++) {
+                for (int y = 0; y < image.getHeight(); y++) {
+                    pw.setArgb(x, y, image.getRGB(x, y));
+                }
+            }
+        }
+
+        return new ImageView(wr).getImage();
+    }
+
+    public void closeEverything(Socket socket){
         try{
-            if(br != null){
-                br.close();
-            }
-            if(bw != null){
-                bw.close();
-            }
+
             if(socket != null){
                 socket.close();
             }
