@@ -18,25 +18,25 @@ import javafx.stage.Stage;
 import javafx.scene.image.ImageView;
 import javafx.scene.canvas.*;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageOutputStream;
 import javax.swing.*;
 import java.awt.*;
 import javafx.scene.image.Image;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.*;
 import java.net.Socket;
 
 
 public class Client extends Application {
-    private final Desktop desktop = Desktop.getDesktop();
-    private Socket socket = null;
 
-    private OutputStream os = null;
-    private InputStream is = null;
+    private Socket socket;
 
-    private int maxSize = 999999999;
-    private int byteRead;
-    private int current = 0;
+    private OutputStream os;
+    private InputStream is;
+
 
     public static void main(String[] args) {
         launch(args);
@@ -50,10 +50,6 @@ public class Client extends Application {
         stage.setTitle("File Chooser Sample");
         try{
             this.socket = new Socket("localhost", 5000);
-            System.out.println(socket);
-
-            this.os = socket.getOutputStream();
-            this.is = socket.getInputStream();
 
         } catch (IOException e) {
             closeEverything(socket);
@@ -61,8 +57,9 @@ public class Client extends Application {
 
         final FileChooser fileChooser = new FileChooser();
         final Button openButton = new Button("Send a Picture");
-        final Button listenButton = new Button("Start listening");
         final ImageView imageContainer = new ImageView();
+
+
 
         openButton.setOnAction(
                 new EventHandler<ActionEvent>() {
@@ -74,17 +71,19 @@ public class Client extends Application {
                         if (file != null) {
                             try {
                                 //Convert file into a byte array
-                                BufferedOutputStream bos = new BufferedOutputStream(os);
 
+                                BufferedImage fileImage = ImageIO.read(new FileInputStream(file.getAbsolutePath()));
+                                BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
 
-                                BufferedImage bisource = ImageIO.read(file);
-                                BufferedImage bi = new BufferedImage(bisource.getWidth(), bisource.getHeight(), BufferedImage.TYPE_INT_RGB);
+                                BufferedImage bufferedImage = new BufferedImage(fileImage.getWidth(), fileImage.getHeight(), BufferedImage.TYPE_INT_RGB);
 
-                                Graphics graphics = bi.createGraphics();
-                                graphics.drawImage(bisource,0,0,null);
+                                Graphics graphics = bufferedImage.createGraphics();
+                                graphics.drawImage(fileImage, 0,0,null);
                                 graphics.dispose();
 
-                                ImageIO.write(bi, "jpg", bos);
+                                ImageIO.write(bufferedImage, "jpg", bos);
+                                bos.close();
+
                                 System.out.println("image Sent out");
 
                             } catch (IOException ex) {
@@ -94,36 +93,44 @@ public class Client extends Application {
                     }
                 });
 
-
-        listenButton.setOnAction(new EventHandler<ActionEvent>() {
+        Thread clientThread = new Thread(new Runnable() {
             @Override
-            public void handle(final ActionEvent e) {
-                System.out.println("listening");
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            while (!socket.isClosed()) {
-                                BufferedInputStream bis = new BufferedInputStream(is);
-                                BufferedImage bi = ImageIO.read(bis);
-                                Image imagetoDisplay = convertToFxImage(bi);
-                                imageContainer.setImage(imagetoDisplay);
-                                System.out.println("image should be displaying");
-                            }
-                        } catch(IOException ex){
-                            throw new RuntimeException(ex);
+            public void run() {
+                try {
+                    System.out.println("Listening thread is running");
+                    while (!socket.isClosed()) {
+
+                        BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
+
+                        if(bis != null) {
+                            BufferedImage bi = ImageIO.read(bis);
+                            bis.close();
+
+                            Image imageToDisplay = convertToFxImage(bi);
+
+                            imageContainer.setImage(imageToDisplay);
+                            imageContainer.setPreserveRatio(true);
+
+                            System.out.println("image should be displaying");
                         }
                     }
-                });
+                    System.out.println("Listening thread has ended");
+                } catch(IOException ex){
+                    System.out.println("Error ocurred");
+                    throw new RuntimeException(ex);
+
+                }
             }
         });
+        clientThread.start();
+
         final FlowPane fPane = new FlowPane();
 
         fPane.setHgap(6);
         fPane.setVgap(6);
         fPane.setOrientation(Orientation.VERTICAL);
         fPane.setAlignment(Pos.CENTER);
-        fPane.getChildren().addAll(openButton, listenButton, imageContainer);
+        fPane.getChildren().addAll(openButton, imageContainer);
 
         final Pane rootGroup = new VBox(12);
         rootGroup.getChildren().addAll(fPane);
@@ -153,7 +160,6 @@ public class Client extends Application {
 
     public void closeEverything(Socket socket){
         try{
-
             if(socket != null){
                 socket.close();
             }
@@ -162,7 +168,4 @@ public class Client extends Application {
         }
     }
 
-    private void openFile(File file) throws IOException{
-        desktop.open(file);
-    }
 }

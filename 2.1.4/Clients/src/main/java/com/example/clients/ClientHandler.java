@@ -1,6 +1,7 @@
 package com.example.clients;
 
 import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -13,21 +14,14 @@ public class ClientHandler implements Runnable{
     private Socket socket;
     private InputStream is;
     private OutputStream os;
-    private String clientUsername;
-
-    private BufferedInputStream bis;
-    private BufferedOutputStream bos;
-
-
 
     public ClientHandler(Socket socket){
         try {
             this.socket = socket;
             this.is = socket.getInputStream();
             this.os = socket.getOutputStream();
-            this.bos = new BufferedOutputStream(os);
-            this.bis = new BufferedInputStream(is);
 
+            System.out.println("outputstream " + os);
             clientHandlers.add(this);
 
         }catch (IOException e){
@@ -40,20 +34,24 @@ public class ClientHandler implements Runnable{
         String messageFromClient;
         while(socket.isConnected()){
             try{
-                BufferedImage bi = ImageIO.read(bis);
 
-                Graphics graphics = bi.createGraphics();
-                graphics.drawImage(bi,0,0,null);
-                graphics.dispose();
+                BufferedInputStream bis = new BufferedInputStream(this.is);
 
+                if(bis != null) {
+                    BufferedImage bi = ImageIO.read(bis);
+                    bis.close();
 
-                broadcastMessage(bi);
+                    if(bi != null) {
+                        broadcastMessage(bi);
+                    }
+                }
+
 
             }catch(IOException e){
-                closeEverything(socket, bis, bos);
-                break;
+                e.printStackTrace();
+                closeEverything(socket, is, os);
+                throw new RuntimeException("Error occurred in image reading");
             }
-
         }
     }
 
@@ -61,16 +59,18 @@ public class ClientHandler implements Runnable{
     public void broadcastMessage(BufferedImage bi){
 
         for(ClientHandler clientHandler : clientHandlers){
-
             try{
-                if(clientHandler != this){;
-                    ImageIO.write(bi, "jpg", bos);
 
-                }
+                BufferedOutputStream bos = new BufferedOutputStream(clientHandler.os);
+                ImageIO.write(bi, "jpg", bos);
+                bos.close();
 
+                System.out.println("sending out image to clients");
 
             } catch (IOException e) {
-                closeEverything(socket, bis, bos);
+                System.out.println("Error occurred in Broadcasting function");
+                e.printStackTrace();
+                closeEverything(clientHandler.socket, clientHandler.is, clientHandler.os);
             }
         }
     }
@@ -80,14 +80,14 @@ public class ClientHandler implements Runnable{
 
     }
 
-    public void closeEverything(Socket socket, BufferedInputStream bis, BufferedOutputStream bos){
+    public void closeEverything(Socket socket, InputStream is, OutputStream os){
         removeClientHandler();
         try{
-            if(bis != null){
-                bis.close();
+            if(is != null){
+                is.close();
             }
-            if(bos != null){
-                bos.close();
+            if(os != null){
+                os.close();
             }
             if (socket != null){
                 socket.close();
