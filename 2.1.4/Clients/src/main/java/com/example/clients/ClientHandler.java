@@ -37,19 +37,18 @@ public class ClientHandler implements Runnable{
 
                 BufferedInputStream bis = new BufferedInputStream(this.is);
 
-                if(bis != null) {
-                    BufferedImage bi = ImageIO.read(bis);
-                    bis.close();
+                BufferedImage bi = ImageIO.read(bis);
+                bis.close();
 
-                    if(bi != null) {
-                        broadcastMessage(bi);
-                    }
+                if(bi != null) {
+                    broadcastMessage(bi);
                 }
+
 
 
             }catch(IOException e){
                 e.printStackTrace();
-                closeEverything(socket, is, os);
+
                 throw new RuntimeException("Error occurred in image reading");
             }
         }
@@ -70,7 +69,7 @@ public class ClientHandler implements Runnable{
             } catch (IOException e) {
                 System.out.println("Error occurred in Broadcasting function");
                 e.printStackTrace();
-                closeEverything(clientHandler.socket, clientHandler.is, clientHandler.os);
+
             }
         }
     }
