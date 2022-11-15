@@ -35,15 +35,15 @@ public class ClientHandler implements Runnable{
         while(socket.isConnected()){
             try{
 
-                BufferedInputStream bis = new BufferedInputStream(this.is);
+                DataInputStream dis = new DataInputStream(this.is);
 
-                BufferedImage bi = ImageIO.read(bis);
-                bis.close();
-
-                if(bi != null) {
-                    broadcastMessage(bi);
+                //read the length of the file sent over from the client
+                int fileLength = dis.readInt();
+                if(fileLength > 0){
+                    byte[] fileContent = new byte[fileLength];
+                    dis.readFully(fileContent, 0, fileLength);
+                    broadcastMessage(fileContent);
                 }
-
 
 
             }catch(IOException e){
@@ -55,15 +55,13 @@ public class ClientHandler implements Runnable{
     }
 
     //Sends a message to all connected users in the clienthandlersList
-    public void broadcastMessage(BufferedImage bi){
+    public void broadcastMessage(byte[] data){
 
         for(ClientHandler clientHandler : clientHandlers){
             try{
-
-                BufferedOutputStream bos = new BufferedOutputStream(clientHandler.os);
-                ImageIO.write(bi, "jpg", bos);
-                bos.close();
-
+                DataOutputStream dos = new DataOutputStream(clientHandler.os);
+                dos.writeInt(data.length);
+                dos.write(data);
                 System.out.println("sending out image to clients");
 
             } catch (IOException e) {

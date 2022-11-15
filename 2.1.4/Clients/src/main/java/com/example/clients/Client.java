@@ -50,7 +50,8 @@ public class Client extends Application {
         stage.setTitle("File Chooser Sample");
         try{
             this.socket = new Socket("localhost", 5000);
-
+            this.is = socket.getInputStream();
+            this.os = socket.getOutputStream();
         } catch (IOException e) {
             closeEverything(socket);
         }
@@ -72,20 +73,15 @@ public class Client extends Application {
                             try {
                                 //Convert file into a byte array
 
-                                BufferedImage fileImage = ImageIO.read(new FileInputStream(file.getAbsolutePath()));
-                                BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+                                FileInputStream fis = new FileInputStream(file.getAbsolutePath());
 
-                                BufferedImage bufferedImage = new BufferedImage(fileImage.getWidth(), fileImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+                                DataOutputStream dos = new DataOutputStream(os);
 
-                                Graphics graphics = bufferedImage.createGraphics();
-                                graphics.drawImage(fileImage, 0,0,null);
-                                graphics.dispose();
+                                byte[] fileContent = new byte[(int)file.length()];
+                                fis.read(fileContent);
 
-                                ImageIO.write(bufferedImage, "jpg", bos);
-                                bos.close();
-
-                                System.out.println("image Sent out");
-
+                                dos.writeInt(fileContent.length);
+                                dos.write(fileContent);
                             } catch (IOException ex) {
                                 ex.printStackTrace();
                             }
@@ -100,25 +96,32 @@ public class Client extends Application {
                     System.out.println("Listening thread is running");
                     while (!socket.isClosed()) {
 
-                        BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
+                        DataInputStream dis = new DataInputStream(is);
 
-                        if(bis != null) {
-                            BufferedImage bi = ImageIO.read(bis);
-                            bis.close();
+                        //read the length of the file sent over from the client
+                        int fileLength = dis.readInt();
+                        if(fileLength > 0) {
+                            byte[] fileContent = new byte[fileLength];
+                            dis.readFully(fileContent, 0, fileLength);
 
-                            Image imageToDisplay = convertToFxImage(bi);
+                            File receivedImage = new File("x.jpg");
+                            FileOutputStream fos = new FileOutputStream(receivedImage);
+                            fos.write(fileContent);
+                            fos.close();
+
+                            Image imageToDisplay = new Image(new FileInputStream(receivedImage));
 
                             imageContainer.setImage(imageToDisplay);
                             imageContainer.setPreserveRatio(true);
-
-                            System.out.println("image should be displaying");
                         }
+
+                        System.out.println("image should be displaying");
+
                     }
                     System.out.println("Listening thread has ended");
                 } catch(IOException ex){
                     System.out.println("Error ocurred");
-                    throw new RuntimeException(ex);
-
+                    ex.printStackTrace();
                 }
             }
         });
