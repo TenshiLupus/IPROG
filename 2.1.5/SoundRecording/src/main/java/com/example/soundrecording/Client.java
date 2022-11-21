@@ -28,10 +28,10 @@ import java.util.Scanner;
 public class Client extends Application {
 
     private Socket socket;
-
     private OutputStream os;
     private InputStream is;
 
+    private File receivedRecording;
 
     public static void main(String[] args) {
         launch(args);
@@ -48,6 +48,7 @@ public class Client extends Application {
             this.socket = new Socket("localhost", 5000);
             this.is = socket.getInputStream();
             this.os = socket.getOutputStream();
+            this.receivedRecording = null;
         } catch (IOException e) {
             closeEverything(socket);
         }
@@ -128,22 +129,22 @@ public class Client extends Application {
                             //read the length of the file sent over from the client
                             int fileLength = dis.readInt();
                             if(fileLength > 0) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                alert.setHeaderText("New recording received");
-                                alert.showAndWait();
+                                System.out.println("New recording received");
+
                                 byte[] fileContent = new byte[fileLength];
                                 dis.readFully(fileContent, 0, fileLength);
 
-                                File receivedImage = new File("x.wav");
-                                FileOutputStream fos = new FileOutputStream(receivedImage);
+                                receivedRecording = new File("receivedRecording.wav");
+                                FileOutputStream fos = new FileOutputStream(receivedRecording);
 
                                 //Insert the received content bytes into the file
                                 fos.write(fileContent);
                                 fos.close();
 
                             }
-
+                            System.out.println("File has been written");
                         }
+
                         System.out.println("Listening thread has ended");
                     } catch(IOException ex){
                         System.out.println("Error ocurred");
@@ -152,6 +153,22 @@ public class Client extends Application {
                 }
             });
             clientThread.start();
+
+            playButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(final ActionEvent e) {
+
+                    try{
+                        AudioInputStream audio = AudioSystem.getAudioInputStream(receivedRecording);
+                        Clip audioClip = AudioSystem.getClip();
+                        audioClip.open(audio);
+                        audioClip.start();
+
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
+                }
+            });
 
         }catch (Exception exception){
             exception.printStackTrace();
