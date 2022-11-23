@@ -20,7 +20,7 @@ public class App {
                 //Assign property values that will be used for this session
                 properties.put("mail.imap.host", "imap.gmail.com");
                 properties.put("mail.imap.port", 993);
-                properties.put("mail.imap.starttls.enable", true);
+                properties.put("mail.imap.sll.enable!", true);
                 properties.put("mail.imap.ssl.trust", "imap.gmail.com");
                 properties.put("mail.store.protocol", "imap");
                 
