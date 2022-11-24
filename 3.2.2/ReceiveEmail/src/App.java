@@ -10,6 +10,8 @@ public class App {
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
 
+        System.out.println("provide host");
+        String hostName = sc.nextLine();
         System.out.println("Provide username:");
         String userName = sc.nextLine();
         System.out.println("Provide password");
@@ -18,10 +20,10 @@ public class App {
         Properties properties = new Properties();
 
                 //Assign property values that will be used for this session
-                properties.put("mail.imap.host", "imap.gmail.com");
+                properties.put("mail.imap.host", hostName);
                 properties.put("mail.imap.port", 993);
                 properties.put("mail.imap.sll.enable!", true);
-                properties.put("mail.imap.ssl.trust", "imap.gmail.com");
+                properties.put("mail.imap.ssl.trust", hostName);
                 properties.put("mail.store.protocol", "imap");
                 
 
@@ -40,7 +42,7 @@ public class App {
                 //Obtain a connection to the host
                 Store store = session.getStore("imaps");
 
-                store.connect("imap.gmail.com",userName, password);
+                store.connect(hostName, userName, password);
                 
                 //Retrieve all the emails stored in the Host database
                 Folder emailFolder = store.getFolder("INBOX");
@@ -48,13 +50,14 @@ public class App {
                 
                 Message[] messages = emailFolder.getMessages();
                 
-                for (int i = 0; i < messages.length; i++){
+                for (int i = 0; i < 20; i++){
 
                     Message currentMessage = messages[i];
 
-                    System.out.println("Email Number : " + (i+1));
-                    System.out.println("Message : " + currentMessage.getSubject());
-                    System.out.println("Message : " + currentMessage.getFrom()[0]);
+                    System.out.println("Message: " + (i+1));
+
+                    System.out.println("From : " + currentMessage.getFrom()[0]);
+                    System.out.println("subject : " + currentMessage.getSubject());
                         
                     
                 }
