@@ -21,8 +21,8 @@ public class EncryptHandler {
         String cipherEngine = "AES/ECB/PKCS5Padding";
        
         Path path = Paths.get(args[0]);
-        String s = Files.readString(path, StandardCharsets.UTF_8);
-        System.out.println("ENCRYPTION" + s);
+        String s = Files.readString(path);
+        System.out.println("ENCRYPTION: " + s);
 
         ObjectInputStream ois = new ObjectInputStream(new FileInputStream(args[1]));
         String b64encodedKey = (String) ois.readObject();
@@ -37,7 +37,10 @@ public class EncryptHandler {
         CipherOutputStream cos = new CipherOutputStream(new FileOutputStream(args[2]), cipher);
         PrintWriter pw = new PrintWriter(new OutputStreamWriter(cos));
     
-        pw.println(s.getBytes(StandardCharsets.UTF_8));
+        pw.println("######");
+        pw.println(s);
+        pw.println("######");
+
         pw.close();
         
 

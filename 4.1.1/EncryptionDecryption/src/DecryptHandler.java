@@ -15,7 +15,7 @@ public class DecryptHandler {
     public static void main(String[] args) throws NoSuchAlgorithmException, IOException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, ClassNotFoundException {
         
         String algorithm = "AES";
-        String cipherEngine = "AES/ECB/NoPadding";
+        String cipherEngine = "AES/ECB/PKCS5Padding";
        
         // FileInputStream encryptedFileData = new FileInputStream(args[0]);
         // byte[] encryptedData = encryptedFileData.readAllBytes();
@@ -34,12 +34,16 @@ public class DecryptHandler {
 
         Cipher cipher = Cipher.getInstance(cipherEngine);
         cipher.init(Cipher.DECRYPT_MODE, originalKey);
-        CipherInputStream cis = new CipherInputStream(new FileInputStream(args[0]), cipher);
-        BufferedReader br = new BufferedReader(new InputStreamReader(cis, StandardCharsets.UTF_8));
 
-        String message = br.readLine();
-        
-        System.out.println("DECRYPTION" + message);
+
+        CipherInputStream cis = new CipherInputStream(new FileInputStream(args[0]), cipher);
+        BufferedReader br = new BufferedReader(new InputStreamReader(cis));
+        System.out.println("Message received");
+        // byte[] decryptedDataContent = cis.readAllBytes();
+
+
+        // String formattedMessage = new String(decryptedDataContent);
+        // System.out.println("DECRYPTION: " + formattedMessage);
         // byte[] decryptedOutput = cipher.doFinal(encryptedData);
         
 
@@ -49,8 +53,16 @@ public class DecryptHandler {
 
         OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(args[2]+".txt"));
         PrintWriter pw = new PrintWriter(osw);
-        pw.println(message);
 
+        pw.println("before Writing Content");
+        String msg;
+        while ((msg = br.readLine()) != null){
+            pw.println(msg);
+        }
+        pw.println("After Writing Content");
+
+        osw.close();
+        pw.close();
 
     }
 
