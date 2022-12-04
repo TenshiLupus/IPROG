@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="3a2133ef-91d7-4201-a00d-cf725c9968d0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../3.1.2/META-INF/INDEX.LIST" beforeDir="false" afterPath="$PROJECT_DIR$/../3.1.2/META-INF/INDEX.LIST" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../3.1.2/com/mysql/jdbc/Charsets.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../3.1.2/com/mysql/jdbc/Charsets.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../3.1.2/com/mysql/jdbc/LocalizedErrorMessages.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../3.1.2/com/mysql/jdbc/LocalizedErrorMessages.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../3.1.2/com/mysql/jdbc/configs/3-0-Compat.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../3.1.2/com/mysql/jdbc/configs/3-0-Compat.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../3.1.2/com/mysql/jdbc/configs/clusterBase.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../3.1.2/com/mysql/jdbc/configs/clusterBase.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../3.1.2/com/mysql/jdbc/configs/fullDebug.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../3.1.2/com/mysql/jdbc/configs/fullDebug.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../3.1.2/com/mysql/jdbc/configs/maxPerformance.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../3.1.2/com/mysql/jdbc/configs/maxPerformance.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../3.1.2/com/mysql/jdbc/configs/solarisMaxPerformance.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../3.1.2/com/mysql/jdbc/configs/solarisMaxPerformance.properties" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="2Gg9xuNZp7yIJ0EnjV1JxYCU1rY" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "C:/Users/Angel/Desktop/Code/IPROG/2.1.4/FileSharing"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3a2133ef-91d7-4201-a00d-cf725c9968d0" name="Changes" comment="" />
+      <created>1666799609742</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1666799609742</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
