@@ -1,9 +1,13 @@
 import java.security.*;
 import java.security.spec.DSAPrivateKeySpec;
 import java.security.spec.EncodedKeySpec;
+import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.RSAPrivateKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.io.*;
+import java.math.BigInteger;
 
 public class SignHandler {
     public static void main(String[] args) {
@@ -14,35 +18,42 @@ public class SignHandler {
 
         try {
 
-            FileInputStream fis = new FileInputStream(dataFileName);
-            byte[] data = fis.readAllBytes();
-            fis.close();
+            FileInputStream dataFis = new FileInputStream(dataFileName);
+            byte[] data = dataFis.readAllBytes();
+            dataFis.close();
 
-            FileInputStream pkfis = new FileInputStream(privateKeyFileName);
-            byte[] privateKeyBytes = pkfis.readAllBytes();
-            pkfis.close();
+            ObjectInputStream privateKeydetes = new ObjectInputStream(new FileInputStream(privateKeyFileName));
+            BigInteger x = (BigInteger) privateKeydetes.readObject();
+            BigInteger p = (BigInteger) privateKeydetes.readObject();
+            BigInteger q = (BigInteger) privateKeydetes.readObject();
+            BigInteger g = (BigInteger) privateKeydetes.readObject();
+
+            privateKeydetes.close();
 
             KeyFactory kf = KeyFactory.getInstance("DSA");
-            PrivateKey privateKey = kf.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes,"DSA"));
-
+            KeySpec privateKeySpec = new DSAPrivateKeySpec(x, p, q, g);
+            PrivateKey pk = kf.generatePrivate(privateKeySpec);
+            
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(data);
 
+            //Original data digest
             byte[] digestBytes = md.digest();
 
             Signature s = Signature.getInstance("DSA");
 
-            s.initSign(privateKey);
+            s.initSign(pk);
             
             byte[] buf = digestBytes;
             s.update(buf);
 
-            byte[] signedDigestData = s.sign();
+            byte[] signature = s.sign();
             
 
             ObjectOutputStream doos = new ObjectOutputStream(new FileOutputStream(signatureFileOutput));
-            doos.writeObject(data);
-            doos.writeObject(signedDigestData);
+            doos.writeObject(signature);
+            doos.writeObject(digestBytes);
+            doos.close();
             
 
             //Read the objects from the Verify Handler and decode them there ## TODO tomorrow
