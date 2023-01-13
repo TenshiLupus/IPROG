@@ -4,7 +4,7 @@ public class ThreadsInitiator {
 
     /**
      * Main function that initiates all subsequent threads
-     * @param args
+     * @param args console arguments passed into the program
      */
     // Main will act as the main thread of execution
     public static void main(String[] args) {

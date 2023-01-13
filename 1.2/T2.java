@@ -1,26 +1,21 @@
 
+//Second way to implement the thread. Allows extension to other class aside from the thread class, as in the other thread class
 public class T2 implements Runnable {
     Thread currentThread = new Thread(this);
 
+    //Global varibles
     String name;
     int sleepTime;
     boolean active = true;
 
-    /**
-     * constructor of the thread with desired name and sleeptime as arguments
-     *
-     * @param name
-     * @param sleepTime
-     */
+    //Starts the thread on instatiation of the class
     public T2(String name, int sleepTime) {
         this.name = name;
         this.sleepTime = sleepTime;
         currentThread.start();
     }
 
-    /**
-     * Setup the running behavior of the thread
-     */
+    //Execution code for when the thread is running
     @Override
     public void run() {
         while (currentThread.isAlive()) {
@@ -32,18 +27,10 @@ public class T2 implements Runnable {
                     System.out.println(e.getMessage());
                 }
             }
-            // try{
-            //     System.out.println("im T2, sleeping for: 5 seconds");
-            //     Thread.sleep(sleepTime);
-            // }catch(InterruptedException ie){
-            //     System.out.println(ie.getMessage());
-            // }
         }
     }
 
-    /**
-     * Switch the active mode of the thread
-     */
+    //Switch the active state of the thread
     public void flipActiveMode() {
         this.active = !active;
     }

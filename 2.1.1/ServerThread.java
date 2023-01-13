@@ -6,12 +6,15 @@ import java.io.InputStreamReader;
 
 
 public class ServerThread implements Runnable {
+
+    //Global variables
     private Thread currentThread = new Thread(this);
     private Socket clientSocket;
     private ArrayList<ServerThread> threadList;
     private PrintWriter output;
     private boolean running;
 
+    //assigns the helper varaibles to this individual thread for lcoal access to the passed in references rather than usign static methods for access
     public ServerThread(Socket socket, ArrayList<ServerThread> threads) {
         this.clientSocket = socket;
         this.threadList = threads;
@@ -20,6 +23,7 @@ public class ServerThread implements Runnable {
         
     }
 
+    //executes the below code on initiation of the thread
     @Override
     public void run() {
         try {
@@ -50,6 +54,7 @@ public class ServerThread implements Runnable {
         }
     }
 
+    //Helper method to kill the thread
     public void kill(){
         running = false;
     }

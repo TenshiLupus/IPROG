@@ -5,16 +5,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-
+//Server thread class implementation
 public class ServerThread implements Runnable {
+    
+    //Global variables
     private Thread currentThread = new Thread(this);
     private Socket clientSocket;
     private ArrayList<ServerThread> threadList;
     public PrintWriter output;
     private BufferedReader input;
-
     private boolean clientThreadRunning;
 
+    //Instantiates a server thread
     public ServerThread(Socket socket, ArrayList<ServerThread> threads) {
         this.clientSocket = socket;
         this.threadList = threads;
@@ -35,8 +37,9 @@ public class ServerThread implements Runnable {
     @Override
     public void run() {
         try {
+
+            //Reads the output from the cleint and sends it out ot the rest of the cleints
             while (clientThreadRunning) {
-                //Read the input from the client into a variable
                 String outputString = input.readLine();
                 if(outputString != null){
                     printToAllClients(outputString);
@@ -51,14 +54,17 @@ public class ServerThread implements Runnable {
             Server.printServerCondition(Server.serverSocket, threadList);
           
         } catch (IOException e) {
+            //Whenever a client unexpectedlly disconnects remove it from the list of active clients
             threadList.remove(this);
             String message = "A client has been forcefully isconnected by the server";
             printToAllClients(message);
+            //Update the new state of the server
             Server.printServerCondition(Server.serverSocket, threadList);
             stopThread();
         }
         finally{
             try {
+                //Close down all resources utlized by the server thread in any case
                 input.close();
                 output.close();
                 clientSocket.close();

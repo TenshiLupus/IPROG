@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+//Server socket that will be utilized to accept connection request to the server port and allocated them to a separate thread
 public class Server {
     private ServerSocket serverSocket;
 
@@ -30,6 +31,7 @@ public class Server {
         }
     }
 
+    //Close all system resources
     public void closeServerSocket(){
         try{
             if(serverSocket != null){

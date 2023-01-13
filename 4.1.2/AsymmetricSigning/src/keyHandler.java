@@ -14,18 +14,22 @@ public class KeyHandler {
     public static void main(String[] args) {
         try{
         
+        //KeyFile destinations
         String privateKeyFile = args[0];
         String publicKeyFile = args[1];
 
+        //Generate a pair of keys
         KeyPairGenerator kpGen = KeyPairGenerator.getInstance("DSA");
         
+        //Get the keys with the given size, multiple of 2
         kpGen.initialize(1024);
-
         KeyPair kp = kpGen.generateKeyPair();
 
+        //Convert keys to DSA keys
         DSAPrivateKey privateKey = (DSAPrivateKey) kp.getPrivate();
         DSAPublicKey publicKey = (DSAPublicKey) kp.getPublic();
         
+        //Setup params that will be utilized for later retrieval
         DSAParams privatedsaParams = privateKey.getParams();
         BigInteger x = privateKey.getX();
         BigInteger y = publicKey.getY();
@@ -33,10 +37,10 @@ public class KeyHandler {
         BigInteger q = privatedsaParams.getQ();
         BigInteger g = privatedsaParams.getG();
 
-        KeyFactory kf = KeyFactory.getInstance("DSA");
-        KeySpec privateKeySpec = new DSAPrivateKeySpec(x, p, q, g);
+        // KeyFactory kf = KeyFactory.getInstance("DSA");
+        // KeySpec privateKeySpec = new DSAPrivateKeySpec(x, p, q, g);
         
-        
+        //Output with streams the parameters to their respective keyFiles
         ObjectOutputStream privateKoos = new ObjectOutputStream(new FileOutputStream(privateKeyFile));
         privateKoos.writeObject(x);
         privateKoos.writeObject(p);

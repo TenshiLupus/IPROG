@@ -8,12 +8,14 @@ public class SSLSimpleServer extends Thread {
     
     private Socket sock;
     
+    //main execution thread
     public static void main(String[] args) throws Exception {
 
         //Instatioate a SSL server socket to accept incoming conenctions from the clients
         ServerSocketFactory ssf = SSLServerSocketFactory.getDefault();
         ServerSocket ss = ssf.createServerSocket(9096);
         
+        //perpetually accept incoming connections
         while (true) {
             new SSLSimpleServer(ss.accept()).start();
         }
@@ -27,6 +29,7 @@ public class SSLSimpleServer extends Thread {
     public void run() {
         try {
             
+            //setup output and input between the sockets
             BufferedReader br = new BufferedReader(new InputStreamReader(sock.getInputStream()));
             PrintWriter pw = new PrintWriter(sock.getOutputStream());
             String data = br.readLine();

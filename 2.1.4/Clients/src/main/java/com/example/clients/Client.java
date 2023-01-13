@@ -29,25 +29,27 @@ import java.awt.image.RenderedImage;
 import java.io.*;
 import java.net.Socket;
 
-
+//Javafx application for sending an image to another client. Opened in intellij
 public class Client extends Application {
 
+    //Global variables
     private Socket socket;
-
     private OutputStream os;
     private InputStream is;
 
-
+    //Launches the javafx program when running the main thread
     public static void main(String[] args) {
         launch(args);
     }
 
+    //Configure the window scene
     @Override
     public void start(Stage stage) {
 
-
-//create a Scene
+        //assings a title to the window
         stage.setTitle("File Chooser Sample");
+
+        //Esatblish a connection to the server that will pass over te data to the other clients
         try{
             this.socket = new Socket("localhost", 5000);
             this.is = socket.getInputStream();
@@ -56,12 +58,12 @@ public class Client extends Application {
             closeEverything(socket);
         }
 
+        //Utilize the file choooser to 
         final FileChooser fileChooser = new FileChooser();
         final Button openButton = new Button("Send a Picture");
         final ImageView imageContainer = new ImageView();
 
-
-
+        //Configure the logic for the button that will be used to select an image file
         openButton.setOnAction(
                 new EventHandler<ActionEvent>() {
                     @Override
@@ -89,6 +91,7 @@ public class Client extends Application {
                     }
                 });
 
+        //Instantiate a client thread alongside the application
         Thread clientThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -109,6 +112,7 @@ public class Client extends Application {
                             fos.write(fileContent);
                             fos.close();
 
+                            //Convert the data sotre the in the retrieved image file to an image that is set to the imageContainer
                             Image imageToDisplay = new Image(new FileInputStream(receivedImage));
 
                             imageContainer.setImage(imageToDisplay);
@@ -127,6 +131,7 @@ public class Client extends Application {
         });
         clientThread.start();
 
+        //Aesthethic configureations for the window view
         final FlowPane fPane = new FlowPane();
 
         fPane.setHgap(6);
@@ -145,7 +150,7 @@ public class Client extends Application {
     }
 
 
-    //function taken from a stackoverflow post
+    //function taken from a stackoverflow post that converts a java.awt image to an FX image due to compatibility issues
     private Image convertToFxImage(BufferedImage image) {
         WritableImage wr = null;
         if (image != null) {
@@ -161,6 +166,7 @@ public class Client extends Application {
         return new ImageView(wr).getImage();
     }
 
+    //Closes the socket resource
     public void closeEverything(Socket socket){
         try{
             if(socket != null){

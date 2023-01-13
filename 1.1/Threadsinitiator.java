@@ -18,6 +18,8 @@ public class Threadsinitiator {
         // create second thread
         T2 ttwo = new T2("ttwo", 5000);
 
+
+        //Pause the mian thread for 5 seconds again
         try {
             Thread.sleep(5000);
         } catch (InterruptedException ie) {

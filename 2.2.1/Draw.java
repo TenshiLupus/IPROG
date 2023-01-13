@@ -27,8 +27,10 @@ public class Draw extends JFrame {
 
 }
 
+//JavaFX UI application that is utilized to draw on a paper
 class Paper extends JPanel implements Runnable {
 
+  //Global variables
   private HashSet hs = new HashSet();
   private DatagramSocket socket;
   private InputReceiver ir;
@@ -37,6 +39,7 @@ class Paper extends JPanel implements Runnable {
   public final static int SERVICE_PORT = 2000;
   private final static int BUFFER_SIZE = 1024;
 
+  //
   public Paper() {
     setBackground(Color.white);
     addMouseListener(new L1());
@@ -71,6 +74,8 @@ class Paper extends JPanel implements Runnable {
     repaint();
   }
 
+
+  //Helper classes to obtain and output the location of the mouse at all times
   class L1 extends MouseAdapter {
     public void mousePressed(MouseEvent me) {
       addPoint(me.getPoint());
@@ -85,6 +90,7 @@ class Paper extends JPanel implements Runnable {
     }
   }
 
+  //Listens for all incoming datagrams sent in trought the UDP socket
   class InputReceiver implements Runnable {
     DatagramSocket socket;
     byte[] buffer;
@@ -101,20 +107,21 @@ class Paper extends JPanel implements Runnable {
       // TODO Auto-generated method stub
       while (true) {
         try {
+          //Stores the incoming data in batches and hadnel its convertion to a point in the viewport 
           DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
           socket.receive(packet);
           String data = new String(packet.getData());
           System.out.println("this is the received data" + "#"+data+"#");
         
-          
+          //Converts the data to a point object 
           String[] pointPosition = data.split(" ");
           System.out.println(pointPosition);
           String pos1 = pointPosition[0].trim();
           String pos2 = pointPosition[1].trim();
           int p1 = Integer.parseInt(pos1);
           int p2 = Integer.parseInt(pos2);
-
           Point p = new Point(p1, p2);
+          
           addPoint(p);
           System.out.println("RECEIVED PACKET");
         } catch (Exception e) {
@@ -124,6 +131,7 @@ class Paper extends JPanel implements Runnable {
     }
   }
 
+  //Helper class that handles the data ouptut to the other end of the datagram socket
   class OutputSender implements Runnable {
     private DatagramSocket socket;
     private String hostName;
@@ -135,8 +143,8 @@ class Paper extends JPanel implements Runnable {
       currentThread.start();
     }
 
-    public void outputPoint(Point point) {
-      
+    //Converts the point into a format that'll be able to be read by the receiver
+    public void outputPoint(Point point) {   
       String pointString = Integer.toString(point.x) + " " + Integer.toString(point.y);
       byte[] buffer = pointString.getBytes();
       try{
@@ -149,6 +157,7 @@ class Paper extends JPanel implements Runnable {
       }
     }
 
+    //Run indefinitely
     @Override
     public void run() {
       while (true) {

@@ -13,33 +13,21 @@ public class KeyHandler {
     
     public static void main(String[] args) throws NoSuchAlgorithmException, IOException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         
+        //Encryption algorithm
         String algorithm = "AES";
         String cipherEngine = "AES/ECB/PKCS5Padding";
 
-
+        //Generate a key of a given size
         KeyGenerator kg = KeyGenerator.getInstance(algorithm);
         kg.init(192);
         Key key = kg.generateKey();
         
+        // encrypt the key as base64 and store it in the keyFile
         String keyData = Base64.getEncoder().encodeToString(key.getEncoded());
-        
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(args[0]+".txt"));
         oos.writeObject(keyData);
 
         oos.close();
-
-        // Cipher cipher = Cipher.getInstance(cipherEngine);
-        // cipher.init(Cipher.ENCRYPT_MODE, key);
-        // byte[] encryptedOutput = cipher.doFinal(data);
-        // System.out.println(encryptedOutput);
-
-        // cipher.init(Cipher.DECRYPT_MODE, key);
-        // byte[] decryptedOutput = cipher.doFinal(encryptedOutput);
-        // System.out.println(decryptedOutput);
-
-        // System.out.println("Input: " + args[0]);
-     
-
     }
 
 }

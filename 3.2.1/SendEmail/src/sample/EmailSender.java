@@ -64,6 +64,7 @@ public class EmailSender extends Application {
 
         Button send = new Button("SEND");
 
+        //Scene aesthetics
         send.setPadding(new Insets(10, 10,10,10));
         message.setMinHeight(50);
 
@@ -72,6 +73,7 @@ public class EmailSender extends Application {
         sp.setPadding(new Insets(10, 4, 10, 4));
         sp.getChildren().addAll(serverName, userName, password, from, to, subject, message, send);
 
+        //Configure the email server properties for sendout
         EventHandler<ActionEvent> event = new EventHandler<>() {
             public void handle(ActionEvent e) {
                 Properties properties = new Properties();
@@ -95,6 +97,8 @@ public class EmailSender extends Application {
 
                 MimeMessage mimeMessage = new MimeMessage(session);
                 try {
+
+                //Retrieve and insert necessary data for sendout
                     Address addressFrom = new InternetAddress(from.getText());
                     Address addressTo = new InternetAddress(to.getText());
 
@@ -109,6 +113,7 @@ public class EmailSender extends Application {
                     throw new RuntimeException(ex);
                 }
                 finally {
+                    //Handle fall cases
                     for(Control field : messageInputs){
                         if(field instanceof TextField){
                             TextField tField = (TextField) field;
@@ -129,15 +134,9 @@ public class EmailSender extends Application {
         Scene scene = new Scene(sp, WIDTH, HEIGTH);
         primaryStage.setScene(scene);
         primaryStage.show();
-
-
-
     }
 
     public static void main(String[] args) {
-
         launch(args);
     }
-
-
 }

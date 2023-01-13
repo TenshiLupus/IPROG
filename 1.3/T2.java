@@ -32,12 +32,6 @@ public class T2 implements Runnable {
                     System.out.println(e.getMessage());
                 }
             }
-            // try{
-            //     System.out.println("im T2, sleeping for: 5 seconds");
-            //     Thread.sleep(sleepTime);
-            // }catch(InterruptedException ie){
-            //     System.out.println(ie.getMessage());
-            // }
         }
     }
 

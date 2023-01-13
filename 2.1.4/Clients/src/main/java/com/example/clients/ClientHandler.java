@@ -8,13 +8,18 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
+//Intermediary class that handles all the logic realted to the clients
 public class ClientHandler implements Runnable{
 
+    
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
+    
+    //Global variables
     private Socket socket;
     private InputStream is;
     private OutputStream os;
 
+    //Assigns the correspondent resources to the client handler gets added to the shared ClientHandler list
     public ClientHandler(Socket socket){
         try {
             this.socket = socket;
@@ -29,8 +34,11 @@ public class ClientHandler implements Runnable{
         }
     }
 
+    //
     @Override
     public void run() {
+
+        //When reading images, it is adecuate to read teh given amount of array data at a time rather than closing the stream completely and losing the connection, such as in Buffered readers
         String messageFromClient;
         while(socket.isConnected()){
             try{
@@ -54,7 +62,7 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    //Sends a message to all connected users in the clienthandlersList
+    //Sends the image data to all connected users in the clienthandlersList
     public void broadcastMessage(byte[] data){
 
         for(ClientHandler clientHandler : clientHandlers){
@@ -72,11 +80,13 @@ public class ClientHandler implements Runnable{
         }
     }
 
+    //helper method to remove this client handler from the list
     public void removeClientHandler(){
         clientHandlers.remove(this);
 
     }
 
+    //Clsoe all utilized resources
     public void closeEverything(Socket socket, InputStream is, OutputStream os){
         removeClientHandler();
         try{

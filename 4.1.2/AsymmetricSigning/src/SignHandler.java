@@ -11,17 +11,19 @@ import java.math.BigInteger;
 
 public class SignHandler {
     public static void main(String[] args) {
-
+        
+        //File paths
         String dataFileName = args[0];
         String privateKeyFileName = args[1];
         String signatureFileOutput = args[2];
 
         try {
-
+            //Get the data from the file that wil be signed
             FileInputStream dataFis = new FileInputStream(dataFileName);
             byte[] data = dataFis.readAllBytes();
             dataFis.close();
 
+            //Convert the key parameters to the appropiate formate for uasge in the keyspecs
             ObjectInputStream privateKeydetes = new ObjectInputStream(new FileInputStream(privateKeyFileName));
             BigInteger x = (BigInteger) privateKeydetes.readObject();
             BigInteger p = (BigInteger) privateKeydetes.readObject();
@@ -30,10 +32,12 @@ public class SignHandler {
 
             privateKeydetes.close();
 
+            //genereate a private key
             KeyFactory kf = KeyFactory.getInstance("DSA");
             KeySpec privateKeySpec = new DSAPrivateKeySpec(x, p, q, g);
             PrivateKey pk = kf.generatePrivate(privateKeySpec);
             
+            //retrieve the data of the file that will be verified for changes
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(data);
 
@@ -42,21 +46,18 @@ public class SignHandler {
 
             Signature s = Signature.getInstance("DSA");
 
+            //Setup the signature and sign the data
             s.initSign(pk);
-            
             byte[] buf = digestBytes;
             s.update(buf);
-
             byte[] signature = s.sign();
             
-
+            //Output the signed data to a file
             ObjectOutputStream doos = new ObjectOutputStream(new FileOutputStream(signatureFileOutput));
             doos.writeObject(signature);
             doos.writeObject(digestBytes);
             doos.close();
             
-
-            //Read the objects from the Verify Handler and decode them there ## TODO tomorrow
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

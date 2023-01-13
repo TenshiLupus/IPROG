@@ -1,10 +1,7 @@
 import java.util.*;
 
-public class ThreadsInitiator{
-    /**
-     * Main function that initiates all subsequent threads
-     * @param args
-     */
+public class Threadsinitiator {
+
     // Main will act as the main thread of execution
     public static void main(String[] args) {
         // create first thread
@@ -21,6 +18,8 @@ public class ThreadsInitiator{
         // create second thread
         T2 ttwo = new T2("ttwo", 5000);
 
+
+        //Pause the mian thread for 5 seconds again
         try {
             Thread.sleep(5000);
         } catch (InterruptedException ie) {

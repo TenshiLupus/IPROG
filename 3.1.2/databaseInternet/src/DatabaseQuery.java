@@ -14,6 +14,7 @@ public class DatabaseQuery {
     }
 
     public static void main(String[] args) {
+        //Instantiates the JDBC Driver
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
         } catch (InstantiationException e1) {
@@ -27,6 +28,7 @@ public class DatabaseQuery {
             e1.printStackTrace();
         }
         
+        //database configuration properties
         String computer = "atlas.dsv.su.se";
         String db_name = "db_21114200";
         String url = "jdbc:mysql://" + computer + "/" + db_name;
@@ -34,19 +36,25 @@ public class DatabaseQuery {
         String password = "114200";
         Scanner sc = new Scanner(System.in);
 
+        //
         try {
+            //Create a connection to the database
             Connection dbConnection = DriverManager.getConnection(url, db_user, password);
             Statement statement = dbConnection.createStatement();
 
+            //INput the data to be sent
             String name = sc.nextLine();
             String email = sc.nextLine();
             String webpage = sc.nextLine();
             String comment = sc.nextLine();
+
+            //Insert the data into the query Values
             statement.executeUpdate("INSERT INTO Logs (personName, email, webpage, comment) VALUES ('"+name+"','"+email+"','"+webpage+"','"+comment +"')");
 
-
+            //logs from selection query
             ResultSet resultSet = statement.executeQuery("SELECT * from Logs");
 
+            //append all the retrieved data from the log
             String personLog = "";
             while (resultSet.next()) {
                 personLog += resultSet.getString("personName") + "\n";
@@ -56,8 +64,8 @@ public class DatabaseQuery {
 
             }
 
+            //Configure the template HTML string
             String htmlTemplate = "<!DOCTYPE html><html><body><textarea name=\"database-input\" id=\"logs\" cols=\"40\" rows=\"40\">$database-logs</textarea></body></html>";
-
             File htmlPage = new File(".\\logs.html");
             try{
                 BufferedWriter bw = new BufferedWriter(new FileWriter(htmlPage));

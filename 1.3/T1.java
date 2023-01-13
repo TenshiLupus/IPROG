@@ -32,12 +32,6 @@ public class T1 extends Thread {
                     System.out.println(e.getMessage());
                 }
             }
-            // try{
-            //     System.out.println("im T1, sleeping for: 5 seconds");
-            //     Thread.sleep(sleepTime);
-            // }catch(InterruptedException ie){
-            //     System.out.println(ie.getMessage());
-            // }
         }
     }
 

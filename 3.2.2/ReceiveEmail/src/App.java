@@ -10,6 +10,7 @@ public class App {
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
 
+        //Query user with the needed information
         System.out.println("provide host");
         String hostName = sc.nextLine();
         System.out.println("Provide username:");
@@ -50,15 +51,14 @@ public class App {
                 
                 Message[] messages = emailFolder.getMessages();
                 
+                //Print out the contents of the database
                 for (int i = 0; i < 20; i++){
 
                     Message currentMessage = messages[i];
 
                     System.out.println("Message: " + (i+1));
-
                     System.out.println("From : " + currentMessage.getFrom()[0]);
-                    System.out.println("subject : " + currentMessage.getSubject());
-                        
+                    System.out.println("subject : " + currentMessage.getSubject());      
                     
                 }
                 

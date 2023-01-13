@@ -21,6 +21,7 @@ public class Client {
         String hostAddress = "127.0.0.1";
         int portNumber = 2000;
 
+        //based on the number of arguments passed into the program assign the correspent values to the socket
         switch(args.length){
             case 3: 
             hostAddress = args[2];
@@ -35,16 +36,21 @@ public class Client {
             break;
         }
 
+        //Instantiates a socket with the given information
         serverPortConnection = new Socket(hostAddress, portNumber); 
         out = new PrintWriter(serverPortConnection.getOutputStream(), true);
         inbf = new BufferedReader(new InputStreamReader(serverPortConnection.getInputStream()));
 
+        //Setup temp variables
         String userInput;
         String response;
         String clientName = null;
 
+        //instatiates a new Client thread that runs on cration
         ClientThread cT = new ClientThread(serverPortConnection);
 
+        //Obtain the encessarey values for assginemnt and printout to the console
+        //kills the client once it feeds exit as input
         do {
             if (clientName == null) {
                 System.out.println("Enter your name: ");

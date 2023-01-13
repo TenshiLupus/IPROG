@@ -45,11 +45,16 @@ public class Client {
 
         try{
 
+        //Creates a new socket with with the given arguments to the program
         socket = new Socket(hostAddress, portNumber);
+
+        //Sets the ability for the client output its input to teh other end of the thread
         clientOutput = new PrintWriter(socket.getOutputStream(), true);
         input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         ClientThread ct = new ClientThread(socket);
         
+        //Assigns the identifier of the  socket along with the input of the client
+        //Sends it forward to the other end of the 
         String userInput;
 
         while (active) {
@@ -62,6 +67,7 @@ public class Client {
                 clientOutput.println(message + userInput);
             }
         }
+        //Closes all the utlized resoruces from the client
         socket.close();
         clientOutput.close();
         input.close();    

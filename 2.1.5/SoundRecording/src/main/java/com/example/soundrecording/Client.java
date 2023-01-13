@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.Scanner;
 
 
+//Client that will be utilized to record and and send the audio to another client
 public class Client extends Application {
 
     private Socket socket;
@@ -44,21 +45,25 @@ public class Client extends Application {
 //create a Scene
         stage.setTitle("File Chooser Sample");
 
+        //Initialize the client socket
         try{
             this.socket = new Socket("localhost", 5000);
             this.is = socket.getInputStream();
             this.os = socket.getOutputStream();
             this.receivedRecording = null;
         } catch (IOException e) {
+            //Close all the resources that won't be utilized
             closeEverything(socket);
         }
 
+        //Setup UI buttons
         final Button recordButton = new Button("Record Audio");
         final Button playButton = new Button("Listen to received recording");
 
         try {
 
             //Setup audio recording components.
+            //Setup audio sampling, bitrate and channels
             AudioFormat audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100, 16, 2, 4, 44100, false);
 
             DataLine.Info dataInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
@@ -68,7 +73,8 @@ public class Client extends Application {
             TargetDataLine targetLine = (TargetDataLine) AudioSystem.getLine(dataInfo);
             targetLine.open();
 
-
+            
+        //Utilize the audio recording line to output the data into a file till the user prommpts to stop
             recordButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(final ActionEvent e) {
@@ -87,6 +93,7 @@ public class Client extends Application {
                     });
                     audioRecordingThread.start();
 
+                    //If the user presses on the ok button, this thread continues and stops the audio recording thread
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setHeaderText("Stop recording?");
                     alert.showAndWait();
@@ -117,6 +124,7 @@ public class Client extends Application {
                 }
             });
 
+            //Client thread that will be utilized to received incoming data from the other side of the client socket
             Thread clientThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -144,7 +152,6 @@ public class Client extends Application {
                             }
                             System.out.println("File has been written");
                         }
-
                         System.out.println("Listening thread has ended");
                     } catch(IOException ex){
                         System.out.println("Error ocurred");
@@ -153,7 +160,8 @@ public class Client extends Application {
                 }
             });
             clientThread.start();
-
+            
+            //Plays the received clip utilizing the audio system
             playButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(final ActionEvent e) {
@@ -174,6 +182,8 @@ public class Client extends Application {
             exception.printStackTrace();
         }
 
+
+        //Aesthetic configuratio of the scene window
         final FlowPane fPane = new FlowPane();
 
         fPane.setHgap(6);
@@ -191,6 +201,7 @@ public class Client extends Application {
         System.out.println("Window should have opened");
     }
 
+    //Close all teh utilized resources
     public void closeEverything(Socket socket){
         try{
             if(socket != null){
